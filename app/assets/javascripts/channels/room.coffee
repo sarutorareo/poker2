@@ -12,8 +12,18 @@ App.room = App.cable.subscriptions.create "RoomChannel",
   speak: (message) ->
     @perform 'speak', message: message
 
-  $(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
-    if event.keyCode is 13 # return = send
-      App.room.speak event.target.value
-      event.target.value = ''
-      event.preventDefault()
+$(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
+  if event.keyCode is 13 # return = send
+    App.room.speak event.target.value
+    event.target.value = ''
+    event.preventDefault()
+
+$(document).on 'click', '#send_message', ->
+  App.room.speak 'from_js'
+  $('#send_message').value = ''
+
+### 以下はなぜ動かないのか
+$('#send_message').click ->
+  console.log 'test'
+###
+ 
