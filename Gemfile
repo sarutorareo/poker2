@@ -50,6 +50,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 group :test do
   gem 'rspec-rails'
   gem 'capybara'
+  gem 'capybara-webkit'
 end
 
 group :development, :test do
@@ -57,4 +58,5 @@ group :development, :test do
   gem 'spring-commands-rspec'
   gem 'factory_girl_rails', '~> 4.2.1'
   gem 'guard-rspec'
+  gem 'headless'
 end

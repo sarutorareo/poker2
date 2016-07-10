@@ -20,7 +20,8 @@ $(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
 
 $(document).on 'click', '#send_message', ->
   App.room.speak 'from_js'
-  $('#send_message').value = ''
+  $('#input_message').val('')
+  event.preventDefault()
 
 ### 以下はなぜ動かないのか
 $('#send_message').click ->

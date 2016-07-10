@@ -6,6 +6,9 @@
 
 # Ignore bundler config.
 /.bundle
+/vendor/bundle/
+/vendor/ruby/
+/bundle_bin/
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
@@ -25,4 +28,4 @@ database.yml
 database.yml.org
 
 # vimのバックアップは除く
-*
+*~
