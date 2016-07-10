@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
-  get 'rooms/show'
+  get 'top2/index'
 
   root to: 'rooms#show'
+
+  get 'rooms/show'
+
   get 'room/show'
 
   get 'top/index'

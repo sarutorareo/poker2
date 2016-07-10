@@ -19,3 +19,10 @@
 
 # Ignore Byebug command history file.
 .byebug_history
+
+# database.yml は除く
+database.yml
+database.yml.org
+
+# vimのバックアップは除く
+*
