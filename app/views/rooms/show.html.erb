@@ -3,7 +3,9 @@
 <div id="messages">
   <%= render @messages %>
 </div>
+
 <form>
   <label>Say something:</label><br>
-  <input type="text" data-behavior="room_speaker">
+  <input type="text" id="input_message" value="test3" data-behavior="room_speaker">
+  <input type="button" id="send_message" value="送信" >
 </form>
