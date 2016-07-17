@@ -18,8 +18,9 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'capybara/rails'
 require 'capybara/rspec'
-require 'headless'
-include Capybara::DSL
+#require 'headless'
+require 'capybara/poltergeist'
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -101,11 +102,47 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 
-  Capybara.javascript_driver = :webkit
-  config.before(:suite) do
-    #Xvfbを起動するheadlessの設定
-    Headless.new(:destroy_on_exit => false).start
+#  Capybara.javascript_driver = :webkit
+  Capybara.javascript_driver = :poltergeist
+#  Capybara.register_driver :poltergeist do |app|
+#    Capybara::Poltergeist::Driver.new(app, {js_errors: false})
+#  end
+
+  #Capybara.server = :puma
+#  Capybara.register_server :puma do |app, port, host|
+#    require 'puma'
+#    Puma::Server.new(app).tap do |s|
+#      s.add_tcp_listener host, port
+#    end.run.join
+#  end
+
+  Capybara.register_server :puma do |app, port, host|
+    require 'puma'
+    Puma::Server.new(app).tap do |s|
+      s.add_tcp_listener host, port
+    end.run.join
   end
+  
+#  Capybara.register_server :puma do |app, port| 
+#    require 'puma'
+#    Puma::Server.new(app).tap do |s|
+#      s.add_tcp_listener Capybara.server_host, port
+#    end.run.join
+#  end
+
+# Here's the meat part, we'll register our own server handler.
+ 
+#  require "puma"
+#  Capybara.register_server("puma") do |app, port|
+#    server = Puma::Server.new(app)
+#    server.add_tcp_listener(Capybara.server_host, port)
+#    server.run
+#  end
+
+#  config.before(:suite) do
+#    #Xvfbを起動するheadlessの設定
+#    Headless.new(:destroy_on_exit => false).start
+#  end
 
   # javascriptテストとスレッドを共有するにはfalseにする
   #config.use_transactional_fixtures = false

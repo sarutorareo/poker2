@@ -50,13 +50,20 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 group :test do
   gem 'rspec-rails'
   gem 'capybara'
-  gem 'capybara-webkit'
+#  gem 'capybara-webkit'
 end
 
+# capybara テスト環境
 group :development, :test do
   # gem 'spring'
   gem 'spring-commands-rspec'
   gem 'factory_girl_rails', '~> 4.2.1'
   gem 'guard-rspec'
-  gem 'headless'
+#  gem 'headless'
+end
+
+# capybara + poltergeist
+group :development, :test do
+  gem 'poltergeist'
+#  gem 'database_cleaner'
 end
