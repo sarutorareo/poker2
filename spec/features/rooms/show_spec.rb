@@ -8,7 +8,7 @@ describe ' トップページ' do
     visit '/' #root_path
     expect(page).to have_css('h1', text: 'Chat room')
   end
-end
+ end
 
 describe "メッセージ入力", js: true do
  before { visit '/' }
@@ -23,7 +23,7 @@ describe "メッセージ入力", js: true do
      wait_for_ajax
      expect(find('input#input_message').value).to eq('')
    end
-   context "textを入力して送信ボタンを押す2"  do
+   context "textを入力して送信ボタンを押す"  do
      before { 
        fill_in 'input_message', with: 'message_for_test'
      }
