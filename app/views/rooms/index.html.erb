@@ -1,0 +1,14 @@
+<h1>Rooms#index</h1>
+<p>Find me in app/views/rooms/index.html.erb</p>
+<table class="list" id="roomtable">
+  <tr>
+    <th>部屋名</th>
+    <th></th>
+  </tr>
+<% @rooms.each do |room| %>
+  <tr>
+    <td style="text-align: right"><%= room.name %></td>
+    <td><%= link_to "入室", room_path(room), id: room.name, class: "enter_button" %></td>
+  </tr>
+<% end %>
+</table>

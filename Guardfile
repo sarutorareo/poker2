@@ -25,7 +25,8 @@
 #  * 'just' rspec: 'rspec'
 
 #guard :rspec, cmd: "bundle exec rspec" do
-guard :rspec, cmd: "bin/rspec -fd -c" do
+#guard :rspec, cmd: "bin/rspec -fd -c" do
+guard :rspec, cmd: "rspec -fd -c" do
   require "guard/rspec/dsl"
   dsl = Guard::RSpec::Dsl.new(self)
 

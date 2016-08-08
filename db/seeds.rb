@@ -1,7 +1,15 @@
 # This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
+# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 #
 # Examples:
 #
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
+#   Mayor.create(name: 'Emanuel', city: cities.first)
+table_names = %w(users rooms poker_rooms)
+table_names.each do |table_name|
+  path = Rails.root.join("db/seeds", Rails.env, table_name + ".rb")
+  if File.exist?(path)
+    puts "Creating #{table_name}..."
+    require path
+  end
+end

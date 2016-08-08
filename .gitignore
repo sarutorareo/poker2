@@ -29,3 +29,8 @@ database.yml.org
 
 # vimのバックアップは除く
 *~
+
+# Gemfileなどのバックアップは除く
+Gemfile.org.*
+spec/rails_helper.rb.org.*
+spec/spec_helper.rb.org.*
