@@ -1,4 +1,5 @@
-App.room = App.cable.subscriptions.create "RoomChannel",
+App.room = App.cable.subscriptions.create {channel: "RoomChannel", room: $('#room_id').val()},
+#App.room = App.cable.subscriptions.create {channel: "RoomChannel", room: $('#room_id').val()},
   connected: ->
     # Called when the subscription is ready for use on the server
 

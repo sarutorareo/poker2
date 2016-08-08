@@ -13,4 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require_tree .
+// 2016/08/08 require tree . では、app/assets/javascript以下のすべてのjsが読まれてしまう。その場合、channel describeが望むタイミングで読まれないため、require tree . をやめて、個別に読み込む
+// require_tree .
+//= require cable.js
