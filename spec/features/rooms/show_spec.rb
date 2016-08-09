@@ -7,42 +7,26 @@ include Capybara::DSL
 describe ' トップページ' do
   it ' タイトルを表示' do
     visit '/' #root_path
-    expect(page).to have_css('h1', text: 'Chat room')
+    expect(page).to have_css('th', text: '部屋名')
   end
 end
 
-describe "メッセージをInsert", js: true do
-  it 'messageが2行になる' do
-    expect(Message.count).to eq(6)
-    Message.create! content: 'test'
-    expect(Message.count).to eq(7)
+
+describe "メッセージ入力", js: true do
+  before { visit '/rooms/2' }
+      
+  context "textを入力して送信ボタンを押す"  do
+    before { 
+      fill_in 'input_message', with: 'message_for_test'
+    }
+ 
+    it 'text入力欄が空になる' do
+      click_button '送信'
+      #wait_for_ajax
+      expect(find('input#input_message').value).to eq('')
+    end
   end
 end
-
-describe "メッセージをInsert", js: true do
-  before { visit '/' }
-  it 'messageが2行になる' do
-    expect(Message.count).to eq(6)
-    page.save_screenshot('/home/sarutorareo/github/poker2/spec/pics/before_clicked.png')
-    click_button '送信'
-    page.save_screenshot('/home/sarutorareo/github/poker2/spec/pics/after_clicked.png')
-    expect(Message.count).to eq(7)
-  end
-end
-
-## describe "メッセージ入力", js: true do
-##  before { visit '/' }
-##      
-##  context "textを入力して送信ボタンを押す"  do
-##    before { 
-##      fill_in 'input_message', with: 'message_for_test'
-##    }
-## 
-##    it 'text入力欄が空になる' do
-##      click_button '送信'
-##      #wait_for_ajax
-##      expect(find('input#input_message').value).to eq('')
-##    end
 ##    context "textを入力して送信ボタンを押す"  do
 ##      before { 
 ##        fill_in 'input_message', with: 'message_for_test'
