@@ -1,4 +1,4 @@
-<h1>Chat room <%= @room.name %></h1>
+<h1>Chat room <%= @room.name %> </h1><h2 id="user_name">(<%= @user.name unless @user.blank? %>)</h2>
 <input type="hidden" id="room_id" value="<%= @room.id %>" data-behavior="room_speaker">
 
 <div id="messages">

@@ -6,7 +6,7 @@
     <th></th>
   </tr>
   <tr>
-    <%= select_tag 'user', options_from_collection_for_select(User.all, :id, :name), {:id => 'user_select'} %>
+    <%= select_tag 'user_select_name', options_from_collection_for_select(@users, :id, :name), {:id => 'user_select'} %>
   </tr>
   <tr>
     <th>部屋名</th>
@@ -15,7 +15,9 @@
 <% @rooms.each do |room| %>
   <tr>
     <td style="text-align: right"><%= room.name %></td>
-    <td><%= link_to "入室", room_path(room), id: room.name, class: "enter_button" %></td>
+    <td><%= button_tag "入室", id: "room_#{room.id}", class: "enter_button" %></td>
   </tr>
 <% end %>
 </table>
+
+<%= javascript_include_tag 'room_index' %>

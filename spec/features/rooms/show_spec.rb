@@ -19,6 +19,36 @@ describe "メッセージ入力", js: true do
     end
   end
 end
+
+describe "入室" do
+  before {
+    FactoryGirl.create(:user, {:name=>'test_user_1'})
+    FactoryGirl.create(:user, {:name=>'test_user_2'})
+    visit '/'
+  }
+      
+  context "ユーザーを選択せず入室するとき", js:true  do
+    before { 
+      find('button#room_1').click
+    }
+ 
+    it 'room#showに遷移して、先頭のユーザー名が表示される' do
+      expect(find('h1', text: 'Chat room Room001')).not_to eq(nil)
+      expect(find('#user_name', text: '(test_user_1)')).not_to eq(nil)
+    end
+  end
+  context "ユーザーを選択して入室するとき", js:true  do
+    before {
+      select "2", from: "user_select"
+      find('button#room_2').click
+    }
+ 
+    it 'room#showに遷移して、先頭のユーザー名が表示される' do
+      expect(find('h1', text: 'Chat room Room002')).not_to eq(nil)
+      expect(find('#user_name', text: '(test_user_2)')).not_to eq(nil)
+    end
+  end
+end
 ##    context "textを入力して送信ボタンを押す"  do
 ##      before { 
 ##        fill_in 'input_message', with: 'message_for_test'
