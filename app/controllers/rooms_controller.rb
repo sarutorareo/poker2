@@ -5,5 +5,6 @@ class RoomsController < ApplicationController
   end
   def index
     @rooms = Room.all
+    @users = User.all
   end
 end

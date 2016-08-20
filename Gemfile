@@ -67,4 +67,5 @@ group :test do
   gem 'simplecov-rcov'
   gem 'capybara-puma'
   gem 'websocket-client-simple'
+  gem 'database_cleaner'
 end

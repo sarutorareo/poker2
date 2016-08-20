@@ -1,16 +1,8 @@
 #require 'support/wait_for_ajax'
 require 'spec_helper'
 require 'capybara_helper'
-include Capybara::DSL
+#include Capybara::DSL
 #include WaitForAjax
-
-describe ' トップページ' do
-  it ' タイトルを表示' do
-    visit '/' #root_path
-    expect(page).to have_css('th', text: '部屋名')
-  end
-end
-
 
 describe "メッセージ入力", js: true do
   before { visit '/rooms/2' }

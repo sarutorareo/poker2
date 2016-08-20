@@ -2,6 +2,13 @@
 <p>Find me in app/views/rooms/index.html.erb</p>
 <table class="list" id="roomtable">
   <tr>
+    <th>ユーザー名</th>
+    <th></th>
+  </tr>
+  <tr>
+    <%= select_tag 'user', options_from_collection_for_select(User.all, :id, :name), {:id => 'user_select'} %>
+  </tr>
+  <tr>
     <th>部屋名</th>
     <th></th>
   </tr>
