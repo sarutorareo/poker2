@@ -1,0 +1,13 @@
+<table class="user_list" id="user_list">
+  <tr>
+    <th>ユーザー名</th>
+    <th></th>
+  </tr>
+  <% room_users.each do | room_user | %>
+    <% @user = User.find(room_user.user_id) %>
+    <tr>
+      <th><%= @user.name %></th>
+      <th><%= @user.chip %></th>
+    </tr>
+  <% end %>
+</table>

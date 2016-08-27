@@ -4,6 +4,51 @@ require 'capybara_helper'
 #include Capybara::DSL
 #include WaitForAjax
 
+describe "入室" do
+  before {
+    @user1 = FactoryGirl.create(:user, {:name=>'test_user_1'})
+    @user2 = FactoryGirl.create(:user, {:name=>'test_user_2'})
+    visit '/'
+  }
+  context "ユーザーを選択せず入室するとき", js:true  do
+    it 'room#showに遷移して、先頭のユーザー名が表示される' do
+      find('button#room_1').click
+      expect(find('h1', text: 'Chat room Room001')).not_to eq(nil)
+      expect(find('#user_name', text: '(test_user_1)')).not_to eq(nil)
+    end
+    it 'room_usersにレコードが追加されている' do
+      room_user = RoomUser.where(:room_id=>1, :user_id=>@user1.id).first
+      expect(room_user).to eq(nil)
+
+      find('button#room_1').click
+
+      room_user = RoomUser.where(:room_id=>1, :user_id=>@user1.id).first
+      expect(room_user).not_to eq(nil)
+    end
+    it 'EnteredBloadcastJobがenqueueされている' do
+      time = Time.current
+      travel_to(time) do
+        assertion = {
+          job: EnteredBroadcastJob,
+          #args: @room_user,
+          at: (time + WAIT_TIME_ENTERED_BROAD_CAST_JOB).to_i
+        }
+        assert_enqueued_with(assertion) { find('button#room_1').click }
+      end
+    end
+  end
+  context "ユーザーを選択して入室するとき", js:true  do
+    before {
+      select "2", from: "user_select"
+      find('button#room_2').click
+    }
+ 
+    it 'room#showに遷移して、先頭のユーザー名が表示される' do
+      expect(find('h1', text: 'Chat room Room002')).not_to eq(nil)
+      expect(find('#user_name', text: '(test_user_2)')).not_to eq(nil)
+    end
+  end
+end
 describe "メッセージ入力", js: true do
   before { 
     @user = FactoryGirl.create(:user)
@@ -24,33 +69,6 @@ describe "メッセージ入力", js: true do
   end
 end
 
-describe "入室" do
-  before {
-    FactoryGirl.create(:user, {:name=>'test_user_1'})
-    FactoryGirl.create(:user, {:name=>'test_user_2'})
-    visit '/'
-  }
-      
-  context "ユーザーを選択せず入室するとき", js:true  do
-    it 'room#showに遷移して、先頭のユーザー名が表示される' do
-      find('button#room_1').click
-      expect(find('h1', text: 'Chat room Room001')).not_to eq(nil)
-      expect(find('#user_name', text: '(test_user_1)')).not_to eq(nil)
-
-    end
-  end
-  context "ユーザーを選択して入室するとき", js:true  do
-    before {
-      select "2", from: "user_select"
-      find('button#room_2').click
-    }
- 
-    it 'room#showに遷移して、先頭のユーザー名が表示される' do
-      expect(find('h1', text: 'Chat room Room002')).not_to eq(nil)
-      expect(find('#user_name', text: '(test_user_2)')).not_to eq(nil)
-    end
-  end
-end
 ##    context "textを入力して送信ボタンを押す"  do
 ##      before { 
 ##        fill_in 'input_message', with: 'message_for_test'

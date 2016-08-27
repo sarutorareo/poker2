@@ -4,7 +4,9 @@
   "description": "This README would normally document whatever steps are necessary to get the application up and running.",
   "main": "index.js",
   "dependencies": {
-    "browserify-incremental": "^3.1.1"
+    "browserify-incremental": "^3.1.1",
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2"
   },
   "devDependencies": {},
   "scripts": {

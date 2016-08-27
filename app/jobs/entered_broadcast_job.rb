@@ -1,12 +1,14 @@
+WAIT_TIME_ENTERED_BROAD_CAST_JOB = 2
 class EnteredBroadcastJob < ApplicationJob
   queue_as :default
 
   def perform(room_user)
-    ActionCable.server.broadcast "room_channel_#{room_user.room_id}", {type: "entered_message", user_list: render_message(room_user)}
+    ActionCable.server.broadcast "room_channel_#{room_user.room_id}", {type: "entered_message", user_list: render_user_list(room_user.room_id)}
+  end
+
+  def render_user_list(room_id)
+    return ApplicationController.renderer.render(partial: 'room_user/index', locals: { room_users: RoomUser.where(:room_id => room_id) } )
   end
 
   private
-  def render_message(room_user)
-    "<p>entered user_id=#{User.find(room_user.user_id).name} (#{room_user.user_id})</p>"
-  end
 end
