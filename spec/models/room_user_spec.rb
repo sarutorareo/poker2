@@ -31,4 +31,38 @@ RSpec.describe RoomUser, type: :model do
       end
     end
   end
+  describe "保存したらエンキュー" do
+    before do
+      @user1 = FactoryGirl.create(:user)
+      @room = Room.find(1)
+    end
+    it 'createしたらEnteredBloadcastJobがenqueueされている' do
+      time = Time.current
+      travel_to(time) do
+        assertion = {
+          job: EnteredBroadcastJob,
+          #args: @room_user,
+          at: (time + WAIT_TIME_ENTERED_BROAD_CAST_JOB).to_i
+        }
+        assert_enqueued_with(assertion) { 
+          @room.users << @user1 
+        }
+      end
+    end
+    it 'destroyしたらEnteredBloadcastJobがenqueueされている' do
+      @room.users << @user1
+
+      time = Time.current + 1.hours
+      travel_to(time) do
+        assertion = {
+          job: EnteredBroadcastJob,
+          #args: @room_user,
+          at: (time + WAIT_TIME_ENTERED_BROAD_CAST_JOB).to_i
+        }
+        assert_enqueued_with(assertion) { 
+          @room.users.destroy(@user1)
+        }
+      end
+    end
+  end
 end

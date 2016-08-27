@@ -16,26 +16,6 @@ describe "入室" do
       expect(find('h1', text: 'Chat room Room001')).not_to eq(nil)
       expect(find('#user_name', text: '(test_user_1)')).not_to eq(nil)
     end
-    it 'room_usersにレコードが追加されている' do
-      room_user = RoomUser.where(:room_id=>1, :user_id=>@user1.id).first
-      expect(room_user).to eq(nil)
-
-      find('button#room_1').click
-
-      room_user = RoomUser.where(:room_id=>1, :user_id=>@user1.id).first
-      expect(room_user).not_to eq(nil)
-    end
-    it 'EnteredBloadcastJobがenqueueされている' do
-      time = Time.current
-      travel_to(time) do
-        assertion = {
-          job: EnteredBroadcastJob,
-          #args: @room_user,
-          at: (time + WAIT_TIME_ENTERED_BROAD_CAST_JOB).to_i
-        }
-        assert_enqueued_with(assertion) { find('button#room_1').click }
-      end
-    end
   end
   context "ユーザーを選択して入室するとき", js:true  do
     before {

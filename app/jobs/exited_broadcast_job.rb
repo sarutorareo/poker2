@@ -1,3 +1,4 @@
+WAIT_TIME_ENTERED_BROAD_CAST_JOB = 2
 class ExitedBroadcastJob < ApplicationJob
   queue_as :default
 
