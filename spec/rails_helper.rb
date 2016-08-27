@@ -42,6 +42,8 @@ RSpec.configure do |config|
   config.order = :random
   config.include RSpecHtmlMatchers
   config.include FactoryGirl::Syntax::Methods
+  config.include ActiveSupport::Testing::TimeHelpers
+  config.include ActiveJob::TestHelper
 
   config.before :all do
     FactoryGirl.reload

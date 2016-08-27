@@ -4,7 +4,11 @@ class RoomChannel < ApplicationCable::Channel
     p "############### 入室"
     p "############### in subscribed"
     p params
-    stream_from "room_channel_#{params[:room]}"
+    @room = Room.find(params[:room_id])
+    @user = User.find(params[:user_id]) unless params[:user_id].blank?
+    @room.users << @user unless @user.blank?
+    @room.save
+    stream_from "room_channel_#{params[:room_id]}"
   end
 
   def unsubscribed

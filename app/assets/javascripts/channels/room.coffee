@@ -1,5 +1,4 @@
-App.room = App.cable.subscriptions.create {channel: "RoomChannel", room: $('#room_id').val()},
-#App.room = App.cable.subscriptions.create {channel: "RoomChannel", room: $('#room_id').val()},
+App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#room_id').val(), user_id: $('#user_id').val()},
   connected: ->
     # Called when the subscription is ready for use on the server
 
@@ -8,7 +7,15 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room: $('#roo
 
   received: (data) ->
     # Called when there's incoming data on the websocket for this channel
-    $('#messages').append data['message']
+    console.log data
+    if (data['type'] == "text_message")
+      $('#text_messages').append data['message']
+    else if (data['type'] == "entered_message")
+
+      $('#entered_messages').append data['user_list']
+#    else
+#      assert('type not defined:'+ data['type'])
+
 
   speak: (room_id, message) ->
     @perform 'speak', {room_id: room_id, message: message}

@@ -5,7 +5,11 @@ require 'capybara_helper'
 #include WaitForAjax
 
 describe "メッセージ入力", js: true do
-  before { visit '/rooms/2' }
+  before { 
+    @user = FactoryGirl.create(:user)
+    visit "/"
+    find('button#room_1').click
+  }
       
   context "textを入力して送信ボタンを押す"  do
     before { 
@@ -28,13 +32,11 @@ describe "入室" do
   }
       
   context "ユーザーを選択せず入室するとき", js:true  do
-    before { 
-      find('button#room_1').click
-    }
- 
     it 'room#showに遷移して、先頭のユーザー名が表示される' do
+      find('button#room_1').click
       expect(find('h1', text: 'Chat room Room001')).not_to eq(nil)
       expect(find('#user_name', text: '(test_user_1)')).not_to eq(nil)
+
     end
   end
   context "ユーザーを選択して入室するとき", js:true  do
@@ -62,8 +64,8 @@ end
 ##        #wait_for_ajax
 ##  
 ##        page.save_screenshot('/home/sarutorareo/github/poker2/spec/pics/after_clicked.png')
-##        expect(page).to have_css('div#messages')
-##        find('#messages', match: :first)
+##        expect(page).to have_css('div#text_messages')
+##        find('#text_messages', match: :first)
 ##        #until has_css?('#message'); end
 ##        find('div#message', match: :first)
 ##        expect(Message.count).to eq(2)

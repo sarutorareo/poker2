@@ -34,3 +34,6 @@ database.yml.org
 Gemfile.org.*
 spec/rails_helper.rb.org.*
 spec/spec_helper.rb.org.*
+
+# tmuxのログは除く
+tmux-*.log
