@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160827133936) do
+ActiveRecord::Schema.define(version: 20160903051227) do
 
   create_table "messages", force: :cascade do |t|
     t.text     "content"
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
     t.integer  "room_id",    default: 1
+    t.string   "user_name"
     t.index ["room_id"], name: "index_messages_on_room_id"
   end
 

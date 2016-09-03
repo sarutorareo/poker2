@@ -2,12 +2,14 @@
 <input type="hidden" id="room_id" value="<%= @room.id %>" data-behavior="room_speaker">
 <input type="hidden" id="user_id" value="<%= @user.id %>" data-behavior="room_speaker">
 
-
 <div id="entered_messages">
 </div>
 
-<div id="text_messages">
-  <%= render @messages %>
+<p>メッセージ</p>
+<div class="text_messages" id="text_messages">
+  <table>
+    <%= render @messages %>
+  </table>
 </div>
 
 <form>

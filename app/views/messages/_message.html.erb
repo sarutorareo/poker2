@@ -1,3 +1,7 @@
-<div class="message" id="message">
-  <p><%= message.content %></p>
+<div class="single_message" id="message">
+  <tr>
+    <th><%= message.updated_at.strftime("%m/%d %H:%M") %></th>
+    <th><%= message.user_name %></th>
+    <th><%= message.content %></th>
+  </tr>
 </div>
