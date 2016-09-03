@@ -1,7 +1,5 @@
-<div class="single_message" id="message">
-  <tr>
-    <th><%= message.updated_at.strftime("%m/%d %H:%M") %></th>
-    <th><%= message.user_name %></th>
-    <th><%= message.content %></th>
-  </tr>
-</div>
+<tr class="single_message" id="message">
+  <td class="datetime"><%= message.updated_at.strftime("%m/%d %H:%M") %></td>
+  <td class="user_name"><%= message.user_name %></td>
+  <td class="content"><%= message.content %></td>
+</tr>

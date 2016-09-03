@@ -10,7 +10,7 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
     console.log data
     if (data['type'] == "text_message")
       #console.log 'text_message: ' + data['message']
-      $('#text_messages').append data['message']
+      $('#text_message_table').append data['message']
       scroll_messages()
     else if (data['type'] == "entered_message")
       #console.log 'entered_message: ' + data['user_list']
