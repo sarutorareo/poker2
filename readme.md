@@ -1,2 +1,0 @@
-Readme
-POKERをRails5で作ってみます
