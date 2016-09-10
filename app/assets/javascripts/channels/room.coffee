@@ -21,6 +21,9 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
   speak: (room_id, user_id, message) ->
     @perform 'speak', {room_id: room_id, user_id: user_id, message: message}
 
+  pull_user_list: (room_id) ->
+    @perform 'pull_user_list', {room_id: room_id}
+
 $(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
   if event.keyCode is 13 # return = send
     App.room.speak $('#room_id').val(), $('#user_id').val(), event.target.value
@@ -43,4 +46,5 @@ scroll_messages = ->
 
 $ ->
   console.log 'test in document.ready'
+  App.room.pull_user_list $('#room_id').val()
   scroll_messages()

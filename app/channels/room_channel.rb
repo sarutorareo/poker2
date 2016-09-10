@@ -28,4 +28,8 @@ class RoomChannel < ApplicationCable::Channel
     user = User.find(data['user_id']) unless data['user_id'].blank?
     Message.create! content: data['message'], room_id: data['room_id'], user_name: user.name
   end
+
+  def pull_user_list(data)
+    EnteredBroadcastJob.set(wait: WAIT_TIME_ENTERED_BROAD_CAST_JOB.second).perform_later data['room_id']
+  end
 end
