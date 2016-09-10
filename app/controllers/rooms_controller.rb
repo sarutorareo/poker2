@@ -1,10 +1,7 @@
 class RoomsController < ApplicationController
   def show
-    @room = Room.find(params[:id])
-    @user = User.find(params[:user_id])
-
     p "####### 入室2"
-    @messages = Message.where(:room_id => @room.id)
+    _prepare_render_show(params)
   end
 
   def index
@@ -14,10 +11,14 @@ class RoomsController < ApplicationController
 
   def start_hand
     p params
-
-    @room = Room.find(params[:id])
-    @user = User.find(params[:user_id])
-    @messages = Message.where(:room_id => @room.id)
+    _prepare_render_show(params)
     render action: :show
+  end
+
+  private
+  def _prepare_render_show(_params)
+    @room = Room.find(_params[:id])
+    @user = User.find(_params[:user_id])
+    @messages = Message.where(:room_id => @room.id)
   end
 end

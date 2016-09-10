@@ -50,6 +50,7 @@ describe "メッセージ入力", js: true do
 end
 
 describe "ハンド開始" do
+  pending "add some examples to (or delete) #{__FILE__}"
   before do
     # 入室
     @user1 = FactoryGirl.create(:user, {:name=>'test_user_1'})
@@ -60,6 +61,7 @@ describe "ハンド開始" do
       
   context "プレイヤーが一人"  do
     it "ハンド開始ボタンを押す"  do
+  pending "add some examples to (or delete) #{__FILE__}"
       click_button 'ハンド開始'
       expect(Hand.count).to eq(1)
       # expect(HandUser.count).to eq(1)
