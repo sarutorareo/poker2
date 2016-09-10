@@ -2,7 +2,7 @@
 <input type="hidden" id="room_id" value="<%= @room.id %>" data-behavior="room_speaker">
 <input type="hidden" id="user_id" value="<%= @user.id %>" data-behavior="room_speaker">
 
-<%= link_to "ハンド開始", {controller:"rooms", action:"start_hand", id:@room.id, user_id: @user.id}, {} %>
+<input type="button" id="start_hand_button" value="ハンド開始" >
 
 <div id="entered_messages">
 </div>
@@ -20,4 +20,4 @@
   <input type="button" id="send_message" value="送信" >
 </form>
 
-<%= javascript_include_tag 'channels/room' %>
+<%= javascript_include_tag 'channels/room'  %>

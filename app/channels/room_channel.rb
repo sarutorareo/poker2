@@ -32,4 +32,10 @@ class RoomChannel < ApplicationCable::Channel
   def pull_user_list(data)
     EnteredBroadcastJob.set(wait: WAIT_TIME_ENTERED_BROAD_CAST_JOB.second).perform_later data['room_id']
   end
+
+  def start_hand(data)
+    user = User.find(data['user_id']) unless data['user_id'].blank?
+    Hand.create! room_id: data['room_id'], buttonUser: user
+    pull_user_list(data)
+  end
 end

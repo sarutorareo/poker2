@@ -9,12 +9,6 @@ class RoomsController < ApplicationController
     @users = User.all
   end
 
-  def start_hand
-    p params
-    _prepare_render_show(params)
-    render action: :show
-  end
-
   private
   def _prepare_render_show(_params)
     @room = Room.find(_params[:id])

@@ -24,6 +24,11 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
   pull_user_list: (room_id) ->
     @perform 'pull_user_list', {room_id: room_id}
 
+  start_hand: (room_id, user_id) ->
+    @perform 'start_hand', {room_id: room_id, user_id: user_id}
+
+$(document).off
+
 $(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
   if event.keyCode is 13 # return = send
     App.room.speak $('#room_id').val(), $('#user_id').val(), event.target.value
@@ -35,16 +40,23 @@ $(document).on 'click', '#send_message', (event) ->
   $('#input_message').val('')
   event.preventDefault()
 
+$(document).on 'click', '#start_hand_button', (event) ->
+  App.room.start_hand $('#room_id').val(), $('#user_id').val()
+  event.preventDefault()
+
 ### 以下はなぜ動かないのか
 $('#send_message').click ->
   console.log 'test'
 ###
- 
+
 scroll_messages = ->
   # 一番下までスクロールする
   $('#text_messages').animate({scrollTop: $('#text_messages')[0].scrollHeight}, 'fast')
 
-$ ->
+do_onload = ->
   console.log 'test in document.ready'
   App.room.pull_user_list $('#room_id').val()
   scroll_messages()
+
+$ ->
+  do_onload()

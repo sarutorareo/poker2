@@ -1,4 +1,4 @@
-WAIT_TIME_ENTERED_BROAD_CAST_JOB = 0
+WAIT_TIME_ENTERED_BROAD_CAST_JOB = 1
 class EnteredBroadcastJob < ApplicationJob
   queue_as :default
 
