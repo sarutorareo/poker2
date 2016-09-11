@@ -25,15 +25,17 @@ class RoomChannel < ApplicationCable::Channel
   end
 
   def speak(data)
-    user = User.find(data['user_id']) unless data['user_id'].blank?
-    Message.create! content: data['message'], room_id: data['room_id'], user_name: user.name
+    user_name = User.find(data['user_id']).name unless data['user_id'].blank?
+    Message.create! content: data['message_content'], room_id: data['room_id'], user_name: user_name
   end
 
   def pull_user_list(data)
+    p "############### pull_user_list"
     EnteredBroadcastJob.set(wait: WAIT_TIME_ENTERED_BROAD_CAST_JOB.second).perform_later data['room_id']
   end
 
   def start_hand(data)
+    p "############### start_hand"
     user = User.find(data['user_id']) unless data['user_id'].blank?
     Hand.create! room_id: data['room_id'], buttonUser: user
     pull_user_list(data)
