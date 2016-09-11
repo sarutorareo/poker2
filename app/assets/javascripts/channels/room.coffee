@@ -56,7 +56,7 @@ scroll_messages = ->
   $('#text_messages').animate({scrollTop: $('#text_messages')[0].scrollHeight}, 'fast')
 
 do_on_document_readay = ->
-  console.log 'in do_on_document_readay'
+  console.log 'in do_on_document_readay...'
   scroll_messages()
 
 $ ->
