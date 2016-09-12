@@ -1,1 +1,0 @@
-(function(){$(function(){$(".enter_button").click(function(){var t;console.log("id ="+this.id),t=this.id.slice(5,+(this.id.length-1)+1||9e9),console.log("room_"+t+" clicked "),window.location.href="rooms/"+t+"?user_id="+$("#user_select option:selected").val()+"?test=1"})})}).call(this);

@@ -37,3 +37,6 @@ spec/spec_helper.rb.org.*
 
 # tmuxのログは除く
 tmux-*.log
+
+# precompileされたassetsは上げない
+public/assets/*
