@@ -31,7 +31,7 @@ class RoomChannel < ApplicationCable::Channel
 
   def pull_user_list(data)
     p "############### pull_user_list"
-    EnteredBroadcastJob.set(wait: WAIT_TIME_ENTERED_BROAD_CAST_JOB.second).perform_later data['room_id']
+    RoomUsersBroadcastJob.set(wait: WAIT_TIME_ROOM_USERS_BROAD_CAST_JOB.second).perform_later data['room_id']
   end
 
   def start_hand(data)

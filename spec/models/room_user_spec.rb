@@ -40,9 +40,9 @@ RSpec.describe RoomUser, type: :model do
       time = Time.current
       travel_to(time) do
         assertion = {
-          job: EnteredBroadcastJob,
+          job: RoomUsersBroadcastJob,
           #args: @room_user,
-          at: (time + WAIT_TIME_ENTERED_BROAD_CAST_JOB).to_i
+          at: (time + WAIT_TIME_ROOM_USERS_BROAD_CAST_JOB).to_i
         }
         assert_enqueued_with(assertion) { 
           @room.users << @user1 
@@ -55,9 +55,9 @@ RSpec.describe RoomUser, type: :model do
       time = Time.current + 1.hours
       travel_to(time) do
         assertion = {
-          job: EnteredBroadcastJob,
+          job: RoomUsersBroadcastJob,
           #args: @room_user,
-          at: (time + WAIT_TIME_ENTERED_BROAD_CAST_JOB).to_i
+          at: (time + WAIT_TIME_ROOM_USERS_BROAD_CAST_JOB).to_i
         }
         assert_enqueued_with(assertion) { 
           @room.users.destroy(@user1)
