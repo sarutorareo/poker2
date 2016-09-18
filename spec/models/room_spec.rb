@@ -22,4 +22,29 @@ RSpec.describe Room, type: :model do
       expect(@user.rooms.count).to eq(1)
     end
   end
+  describe "get_users_id ルームユーザーのid配列を取得する" do
+    before do
+      @user1 = FactoryGirl.create(:user)
+      @user2 = FactoryGirl.create(:user)
+      @room = Room.find(1)
+    end
+    context "ユーザーが二人いる場合" do
+      before do
+        @room.users << @user1
+        @room.users << @user2
+      end
+      it "二人分のid配列が返される" do
+        ar = @room.get_room_user_ids
+        expect(ar.count).to eq(2)
+        expect(ar[0].is_a?(Integer)).to eq(true)
+      end
+    end
+    context "ユーザーが一人もいない場合" do
+      it "長さ0の配列が返される" do
+        ar = @room.get_room_user_ids
+        expect(ar.count).to eq(0)
+      end
+    end
+
+  end
 end

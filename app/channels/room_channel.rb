@@ -2,13 +2,13 @@
 class RoomChannel < ApplicationCable::Channel
   def subscribed
     p "############### subscribed"
-    @room = Room.find(params[:room_id])
-    @user = User.find(params[:user_id]) unless params[:user_id].blank?
+    room = Room.find(params[:room_id])
+    user = User.find(params[:user_id]) unless params[:user_id].blank?
     #roomにユーザーを追加する
     #すでに@user_idが存在する場合はvalidationによりActiveRecord::RecordInvalidが発生する
     begin
-      @room.users << @user unless @user.blank?
-      @room.save
+      room.users << user unless user.blank?
+      room.save
     rescue ActiveRecord::RecordInvalid => ex
       #何もしない
     end
@@ -18,10 +18,10 @@ class RoomChannel < ApplicationCable::Channel
   def unsubscribed
     # Any cleanup needed when channel is unsubscribed
     p "############### unsubscribed"
-    @room = Room.find(params[:room_id])
-    @user = User.find(params[:user_id]) unless params[:user_id].blank?
-    @room.users.destroy(@user) unless params[:user_id].blank?
-    @room.save
+    room = Room.find(params[:room_id])
+    user = User.find(params[:user_id]) unless params[:user_id].blank?
+    room.users.destroy(user) unless params[:user_id].blank?
+    room.save
   end
 
   def speak(data)
@@ -36,8 +36,9 @@ class RoomChannel < ApplicationCable::Channel
 
   def start_hand(data)
     p "############### start_hand"
-    user = User.find(data['user_id']) unless data['user_id'].blank?
-    Hand.create! room_id: data['room_id'], buttonUser: user
-    pull_user_list(data)
+    buttonUser = User.find(data['user_id']) unless data['user_id'].blank?
+    room = Room.find(params[:room_id])
+    hand = Hand.create! room_id: data['room_id'], buttonUser: buttonUser
+    hand.create_hand_users(room.get_room_user_ids)
   end
 end

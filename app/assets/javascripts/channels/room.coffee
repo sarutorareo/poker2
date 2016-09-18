@@ -12,12 +12,12 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
     # Called when there's incoming data on the websocket for this channel
     console.log data
     if (data['type'] == "text_message")
-      #console.log 'text_message: ' + data['message']
       $('#text_message_table').append data['DOM_message']
       scroll_messages()
-    else if (data['type'] == "entered_message")
-      #console.log 'entered_message: ' + data['user_list']
-      $('#entered_messages').html data['DOM_user_list']
+    else if (data['type'] == "msg_room_users")
+      $('#room_users').html data['DOM_user_list']
+    else if (data['type'] == "msg_start_hand")
+      $('#hand_users').html data['DOM_hand_user_list']
     else
       alert('type not defined:'+ data['type'])
 
