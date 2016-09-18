@@ -11,8 +11,8 @@ RSpec.describe Hand, type: :model do
       before do
         @room.users << @user1
         @room.users << @user2
-        buttonUser = @user1
-        @hand = Hand.create! room_id: @room.id, buttonUser: buttonUser
+        button_user = @user1
+        @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: button_user
       end
       it "二人分hand_userが作られる" do
         @hand.create_hand_users(@room.get_room_user_ids)
@@ -36,8 +36,8 @@ RSpec.describe Hand, type: :model do
     end
     context "roomにユーザーが一人もいない場合" do
       before do
-        buttonUser = @user1
-        @hand = Hand.create! room_id: @room.id, buttonUser: buttonUser
+        button_user = @user1
+        @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: button_user
       end
       it "長さ0のhand_userが作られる" do
         @hand.create_hand_users(@room.get_room_user_ids)

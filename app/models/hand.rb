@@ -1,5 +1,6 @@
 class Hand < ApplicationRecord
-  belongs_to :buttonUser, class_name: "User", foreign_key: "user_id"
+  belongs_to :button_user, class_name: "User", foreign_key: "button_user_id"
+  belongs_to :tern_user, class_name: "User", foreign_key: "tern_user_id"
   belongs_to :room
   has_many :hand_users
   has_many :users, through: :hand_users

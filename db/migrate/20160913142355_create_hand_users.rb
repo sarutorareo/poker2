@@ -6,5 +6,7 @@ class CreateHandUsers < ActiveRecord::Migration[5.0]
 
       t.timestamps
     end
+    add_foreign_key :hand_users, :hands, column: "hand_id"
+    add_foreign_key :hand_users, :users, column: "user_id"
   end
 end

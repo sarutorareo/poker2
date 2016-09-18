@@ -36,9 +36,9 @@ class RoomChannel < ApplicationCable::Channel
 
   def start_hand(data)
     p "############### start_hand"
-    buttonUser = User.find(data['user_id']) unless data['user_id'].blank?
+    button_user = User.find(data['user_id']) unless data['user_id'].blank?
     room = Room.find(params[:room_id])
-    hand = Hand.create! room_id: data['room_id'], buttonUser: buttonUser
+    hand = Hand.create! room_id: data['room_id'], button_user: button_user, tern_user: button_user
     hand.create_hand_users(room.get_room_user_ids)
   end
 end

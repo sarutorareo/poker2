@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160913142355) do
+ActiveRecord::Schema.define(version: 20160918070446) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,13 +25,13 @@ ActiveRecord::Schema.define(version: 20160913142355) do
   end
 
   create_table "hands", force: :cascade do |t|
-    t.integer  "room_id",    null: false
-    t.integer  "user_id",    null: false
+    t.integer  "room_id",        null: false
+    t.integer  "button_user_id", null: false
+    t.integer  "tern_user_id",   null: false
     t.integer  "bb"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.index ["room_id"], name: "index_hands_on_room_id", using: :btree
-    t.index ["user_id"], name: "index_hands_on_user_id", using: :btree
   end
 
   create_table "messages", force: :cascade do |t|
@@ -66,4 +66,12 @@ ActiveRecord::Schema.define(version: 20160913142355) do
     t.datetime "updated_at",             null: false
   end
 
+  add_foreign_key "hand_users", "hands"
+  add_foreign_key "hand_users", "users"
+  add_foreign_key "hands", "rooms"
+  add_foreign_key "hands", "users", column: "button_user_id"
+  add_foreign_key "hands", "users", column: "tern_user_id"
+  add_foreign_key "messages", "rooms"
+  add_foreign_key "room_users", "rooms"
+  add_foreign_key "room_users", "users"
 end
