@@ -49,6 +49,7 @@ class RoomChannel < ApplicationCable::Channel
       raise "data['hand_id'] is blank"
     end
     hand = Hand.find(data['hand_id'])
-    hand.rotate_tern!
+
+    Dealer.user_action(hand, data['user_id'], data['action_kbn'])
   end
 end

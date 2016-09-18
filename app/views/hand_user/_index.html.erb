@@ -4,13 +4,15 @@
     <th>button</th>
     <th>tern</th>
     <th>ハンドユーザー名</th>
+    <th>action</th>
     <th>chip</th>
   </tr>
-  <% hand.users.each do | hu | %>
+  <% hand.hand_users.each do | hu | %>
     <tr>
-      <th><%= hand.button_user.id == hu.id ? "●":"" %></th>
-      <th><%= hand.tern_user.id == hu.id ? "●":"" %></th>
-      <th><%= hu.name %></th>
+      <th><%= hand.button_user.id == hu.user_id ? "●":"" %></th>
+      <th><%= hand.tern_user.id == hu.user_id ? "●":"" %></th>
+      <th><%= hu.user.name %></th>
+      <th><%= hu.last_action_str %></th>
       <th><%= hu.chip %></th>
     </tr>
   <% end %>
