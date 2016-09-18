@@ -1,4 +1,7 @@
+ACT_FOLD = 0
+
 App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#room_id').val(), user_id: $('#user_id').val()},
+
   connected: ->
     # Called when the subscription is ready for use on the server
     console.log 'in connected'
@@ -16,7 +19,7 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
       scroll_messages()
     else if (data['type'] == "msg_room_users")
       $('#room_users').html data['DOM_user_list']
-    else if (data['type'] == "msg_start_hand")
+    else if (data['type'] == "msg_hand_users")
       $('#hand_users').html data['DOM_hand_user_list']
     else
       alert('type not defined:'+ data['type'])
@@ -31,6 +34,10 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
   start_hand: (room_id, user_id) ->
     @perform 'start_hand', {room_id: room_id, user_id: user_id}
 
+  user_action: (room_id, hand_id, user_id, action_kbn) ->
+    @perform 'user_action', {room_id: room_id, hand_id: hand_id, user_id: user_id, action_kbn: action_kbn}
+
+
 $(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
   if event.keyCode is 13 # return = send
     App.room.speak $('#room_id').val(), $('#user_id').val(), event.target.value
@@ -44,6 +51,10 @@ $(document).on 'click', '#send_message', (event) ->
 
 $(document).on 'click', '#start_hand_button', (event) ->
   App.room.start_hand $('#room_id').val(), $('#user_id').val()
+  event.preventDefault()
+
+$(document).on 'click', '#fold_button', (event) ->
+  App.room.user_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_FOLD
   event.preventDefault()
 
 ### 以下はなぜ動かないのか
