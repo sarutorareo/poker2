@@ -1,13 +1,16 @@
 <table class="hand_user_list" id="hand_user_list">
   <tr>
+    <th>button</th>
+    <th>tern</th>
     <th>ハンドユーザー名</th>
-    <th></th>
+    <th>chip</th>
   </tr>
-  <% hand_users.each do | hu | %>
-    <% @user = User.find(hu.user_id) %>
+  <% hand.users.each do | hu | %>
     <tr>
-      <th><%= @user.name %></th>
-      <th><%= @user.chip %></th>
+      <th><%= hand.button_user.id == hu.id ? "●":"" %></th>
+      <th><%= hand.tern_user.id == hu.id ? "●":"" %></th>
+      <th><%= hu.name %></th>
+      <th><%= hu.chip %></th>
     </tr>
   <% end %>
 </table>

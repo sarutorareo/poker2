@@ -9,6 +9,6 @@ class StartHandBroadcastJob < ApplicationJob
 
   private
   def render_user_list(hand_id)
-    return ApplicationController.renderer.render(partial: 'hand_user/index', locals: { hand_users: HandUser.where(:hand_id => hand_id) } )
+    return ApplicationController.renderer.render(partial: 'hand_user/index', locals: { hand: Hand.find(hand_id) } )
   end
 end
