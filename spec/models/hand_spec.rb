@@ -4,7 +4,9 @@ RSpec.describe Hand, type: :model do
   describe "create_hand_users!" do
     before do
       @user_1 = FactoryGirl.create(:user)
+      @user_1.chip = 101
       @user_2 = FactoryGirl.create(:user)
+      @user_2.chip = 102
       @room = Room.find(1)
     end
     context "roomにユーザーが二人いる場合" do
@@ -19,6 +21,9 @@ RSpec.describe Hand, type: :model do
         expect(@hand.hand_users.count).to eq(2)
         # "DBに値が保存されている"
         expect(HandUser.count(:hand_id == @hand.id)).to eq(2)
+        # ユーザーのチップが設定されている
+        expect(HandUser.find_by_user_id(@user_1.id).chip).to eq(@user_1.chip)
+        expect(HandUser.find_by_user_id(@user_2.id).chip).to eq(@user_2.chip)
       end
     end
     context "roomにユーザーが一人もいない場合" do

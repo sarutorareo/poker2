@@ -47,8 +47,14 @@ class RoomChannel < ApplicationCable::Channel
     p "############### tern_action"
     p data.inspect
 
+    # ユーザーのアクションを処理する
     df = DlTernActionForm.new(data)
     srv = df.build_service
     srv.do!()
+
+    # 一周したか判定
+    # if srv.do!() 
+    #   winners = srv.judge
+    #   srv.apply_pot(winners)
   end
 end

@@ -1,4 +1,7 @@
-ACT_FOLD = 0
+ACT_KBN_FOLD = 0
+ACT_KBN_CALL = 1
+ACT_KBN_RAISE = 2
+ACT_KBN_ALL_IN = 3
 
 App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#room_id').val(), user_id: $('#user_id').val()},
 
@@ -34,8 +37,8 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
   start_hand: (room_id, user_id) ->
     @perform 'start_hand', {room_id: room_id, user_id: user_id}
 
-  tern_action: (room_id, hand_id, user_id, action_kbn) ->
-    @perform 'tern_action', {room_id: room_id, hand_id: hand_id, user_id: user_id, action_kbn: action_kbn}
+  tern_action: (room_id, hand_id, user_id, action_kbn, chip) ->
+    @perform 'tern_action', {room_id: room_id, hand_id: hand_id, user_id: user_id, action_kbn: action_kbn, chip: chip}
 
 
 $(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
@@ -54,8 +57,13 @@ $(document).on 'click', '#start_hand_button', (event) ->
   event.preventDefault()
 
 $(document).on 'click', '#fold_button', (event) ->
-  App.room.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_FOLD
+  App.room.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_FOLD, 0
   event.preventDefault()
+
+$(document).on 'click', '#call_button', (event) ->
+  App.room.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_CALL, 100
+  event.preventDefault()
+
 
 ### 以下はなぜ動かないのか
 $('#send_message').click ->

@@ -1,10 +1,10 @@
 class DlTernActionForm
   include ActiveModel::Model
 
-  attr_reader :hand_id, :user_id, :action_kbn
+  attr_reader :hand_id, :user_id, :action_kbn, :chip
 
   # user_idは必須
-  validates :hand_id, :user_id, :action_kbn, presence: true
+  validates :hand_id, :user_id, :action_kbn, :chip,presence: true
   validates :action_kbn, inclusion: [
     TernAction::ACT_KBN_NULL,
     TernAction::ACT_KBN_FOLD,
@@ -19,6 +19,7 @@ class DlTernActionForm
     @hand_id = data['hand_id']
     @user_id = data['user_id']
     @action_kbn = data['action_kbn']
+    @chip = data['chip']
   end
 
   # サービスを生成

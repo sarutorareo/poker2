@@ -7,10 +7,12 @@ RSpec.describe DlTernActionForm, type: :form do
       data['hand_id'] = 3
       data['user_id'] = 1
       data['action_kbn'] = 2
+      data['chip'] = 100
       form = DlTernActionForm.new(data)
       expect(form.hand_id).to eq(3)
       expect(form.user_id).to eq(1)
       expect(form.action_kbn).to eq(2)
+      expect(form.chip).to eq(100)
     end
   end
   describe 'valid' do
@@ -25,6 +27,7 @@ RSpec.describe DlTernActionForm, type: :form do
       @data['hand_id'] = @hand.id
       @data['user_id'] = @user_1.id
       @data['action_kbn'] = 2
+      @data['chip'] = 0
     end
     context 'パラメータが空なら' do
       before do
@@ -79,9 +82,18 @@ RSpec.describe DlTernActionForm, type: :form do
         expect(form.valid?).to eq(false)
       end
     end
-    context 'action_kbnが範囲(NONE, FOLD, CALL, RAISE, ALL_IN)外' do
+    context 'action_kbnが範囲(FOLD, CALL, RAISE, ALL_IN)外' do
       before do
         @data['action_kbn'] = 99
+      end
+      it 'valid?=false' do
+        form = DlTernActionForm.new(@data)
+        expect(form.valid?).to eq(false)
+      end
+    end
+    context 'action_kbnが(AKT_KBN_NULL)' do
+      before do
+        @data['action_kbn'] = TernAction::ACT_KBN_NULL
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -110,6 +122,7 @@ RSpec.describe DlTernActionForm, type: :form do
         @data['hand_id'] = @hand.id
         @data['user_id'] = @user_1.id
         @data['action_kbn'] = 2
+        @data['chip'] = 100
       end
       it 'サービスが作られる' do
         form = DlTernActionForm.new(@data)
