@@ -7,11 +7,6 @@ class HandUser < ApplicationRecord
     return _act_kbn_to_str(self.last_action_kbn)
   end
 
-  def set_last_action_kbn! (action_kbn)
-    self.last_action_kbn = action_kbn
-    self.save!
-  end
-
 private
   def _set_order
     max_order = self.hand.get_max_hand_user_order

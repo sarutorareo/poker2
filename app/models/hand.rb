@@ -44,7 +44,6 @@ class Hand < ApplicationRecord
     end
     user = User.find(self.hand_users[index].user_id)
     self.tern_user = user
-    self.save!
   end
   def get_max_hand_user_order
     if self.hand_users.count == 0

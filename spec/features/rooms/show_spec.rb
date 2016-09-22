@@ -13,6 +13,7 @@ describe "入室" do
   context "ユーザーを選択せず入室するとき", js:true  do
     it 'room#showに遷移して、先頭のユーザー名が表示される' do
       find('button#room_1').click
+     
       expect(find('h1', text: 'Chat room Room001')).not_to eq(nil)
       expect(find('#user_name', text: '(test_user_1)')).not_to eq(nil)
     end

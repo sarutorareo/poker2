@@ -40,18 +40,15 @@ class RoomChannel < ApplicationCable::Channel
     room = Room.find(params[:room_id])
     hand = Hand.create! room_id: data['room_id'], button_user: button_user, tern_user: button_user
     hand.start_hand!(room.get_room_user_ids)
+    hand.save!
   end
 
   def user_action(data)
     p "############### user_action"
     p data.inspect
-    if data['hand_id'].blank? 
-      raise "data['hand_id'] is blank"
-    end
-    hand = Hand.find(data['hand_id'])
 
-    dealer_form = DlTernActionForm.new(data)
-    srv = dealer_form.build_service
-    srv.user_action(hand, data['user_id'], data['action_kbn'])
+    df = DlTernActionForm.new(data)
+    srv = df.build_service
+    srv.user_action()
   end
 end
