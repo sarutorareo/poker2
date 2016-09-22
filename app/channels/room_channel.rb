@@ -43,12 +43,12 @@ class RoomChannel < ApplicationCable::Channel
     hand.save!
   end
 
-  def user_action(data)
-    p "############### user_action"
+  def tern_action(data)
+    p "############### tern_action"
     p data.inspect
 
     df = DlTernActionForm.new(data)
     srv = df.build_service
-    srv.user_action()
+    srv.do!()
   end
 end

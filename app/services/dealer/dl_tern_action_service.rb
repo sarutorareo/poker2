@@ -4,7 +4,7 @@ class DlTernActionService
     @user_id = user_id
     @action_kbn = action_kbn
   end
-  def user_action()
+  def do!()
     hand = Hand.find(@hand_id)
     hand_user = hand.hand_users.where(:user_id => @user_id).first
     if hand_user.blank? 

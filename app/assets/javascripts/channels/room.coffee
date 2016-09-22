@@ -34,8 +34,8 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
   start_hand: (room_id, user_id) ->
     @perform 'start_hand', {room_id: room_id, user_id: user_id}
 
-  user_action: (room_id, hand_id, user_id, action_kbn) ->
-    @perform 'user_action', {room_id: room_id, hand_id: hand_id, user_id: user_id, action_kbn: action_kbn}
+  tern_action: (room_id, hand_id, user_id, action_kbn) ->
+    @perform 'tern_action', {room_id: room_id, hand_id: hand_id, user_id: user_id, action_kbn: action_kbn}
 
 
 $(document).on 'keypress', '[data-behavior~=room_speaker]', (event) ->
@@ -54,7 +54,7 @@ $(document).on 'click', '#start_hand_button', (event) ->
   event.preventDefault()
 
 $(document).on 'click', '#fold_button', (event) ->
-  App.room.user_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_FOLD
+  App.room.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_FOLD
   event.preventDefault()
 
 ### 以下はなぜ動かないのか
