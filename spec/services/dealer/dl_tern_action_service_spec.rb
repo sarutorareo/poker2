@@ -15,6 +15,7 @@ RSpec.describe DlTernActionService, type: :service do
       @data = {}
       @data['hand_id'] = 0
       @data['user_id'] = 0
+      @data['chip'] = 0
       @data['action_kbn'] = TernAction::ACT_KBN_NULL
     end
     context 'tern_userの場合' do
