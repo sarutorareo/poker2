@@ -32,7 +32,6 @@ RSpec.describe DlTernActionService, type: :service do
           expect(@hand.tern_user.id).to eq(@user_1.id)
 
           @ds.do!()
-          p Hand.all
           @hand = Hand.find(@hand.id)
           #user_1のlast_actionが更新されている
           hand_user = @hand.hand_users.where(:user_id => @user_1.id).first
