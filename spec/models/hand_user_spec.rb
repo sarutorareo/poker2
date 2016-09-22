@@ -33,7 +33,7 @@ RSpec.describe HandUser, type: :model do
     end
     context 'foldの場合' do
       before do
-        @hand_user.last_action_kbn = ACT_KBN_FOLD
+        @hand_user.last_action_kbn = TernAction::ACT_KBN_FOLD
       end
       it '"fold"が返される' do
         expect(@hand_user.last_action_str).to eq('fold')
@@ -41,7 +41,7 @@ RSpec.describe HandUser, type: :model do
     end
     context 'callの場合' do
       before do
-        @hand_user.last_action_kbn = ACT_KBN_CALL
+        @hand_user.last_action_kbn = TernAction::ACT_KBN_CALL
       end
       it '"call"が返される' do
         expect(@hand_user.last_action_str).to eq('call')
@@ -49,7 +49,7 @@ RSpec.describe HandUser, type: :model do
     end
     context 'raiseの場合' do
       before do
-        @hand_user.last_action_kbn = ACT_KBN_RAISE
+        @hand_user.last_action_kbn = TernAction::ACT_KBN_RAISE
       end
       it '"raise"が返される' do
         expect(@hand_user.last_action_str).to eq('raise')
@@ -57,7 +57,7 @@ RSpec.describe HandUser, type: :model do
     end
     context 'all_inの場合' do
       before do
-        @hand_user.last_action_kbn = ACT_KBN_ALL_IN
+        @hand_user.last_action_kbn = TernAction::ACT_KBN_ALL_IN
       end
       it '"all_in"が返される' do
         expect(@hand_user.last_action_str).to eq('all_in')

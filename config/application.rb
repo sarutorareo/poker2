@@ -16,5 +16,11 @@ module Poker2
     end
     config.time_zone = 'Tokyo'
     config.active_record.default_timezone = :local
+
+    # サービスをオートロードする
+    config.autoload_paths += %W(#{config.root}/app/services)
+    config.autoload_paths += %W(#{config.root}/app/services/dealer)
+    config.autoload_paths += %W(#{config.root}/app/forms)
+    config.autoload_paths += %W(#{config.root}/app/forms/dealer)
   end
 end

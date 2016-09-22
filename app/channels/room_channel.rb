@@ -50,6 +50,8 @@ class RoomChannel < ApplicationCable::Channel
     end
     hand = Hand.find(data['hand_id'])
 
-    Dealer.user_action(hand, data['user_id'], data['action_kbn'])
+    dealer_form = DlTernActionForm.new(data)
+    srv = dealer_form.build_service
+    srv.user_action(hand, data['user_id'], data['action_kbn'])
   end
 end

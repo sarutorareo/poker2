@@ -1,8 +1,3 @@
-ACT_KBN_NULL = nil
-ACT_KBN_FOLD = 0
-ACT_KBN_CALL = 1
-ACT_KBN_RAISE = 2
-ACT_KBN_ALL_IN = 3
 class HandUser < ApplicationRecord
   belongs_to :hand
   belongs_to :user
@@ -24,11 +19,11 @@ private
   end
   def _act_kbn_to_str(act_kbn)
     return case act_kbn
-      when ACT_KBN_FOLD then 'fold'
-      when ACT_KBN_CALL then 'call'
-      when ACT_KBN_RAISE then 'raise'
-      when ACT_KBN_ALL_IN then 'all_in'
-      when ACT_KBN_NULL then '-'
+      when TernAction::ACT_KBN_FOLD then 'fold'
+      when TernAction::ACT_KBN_CALL then 'call'
+      when TernAction::ACT_KBN_RAISE then 'raise'
+      when TernAction::ACT_KBN_ALL_IN then 'all_in'
+      when TernAction::ACT_KBN_NULL then '-'
       else raise 'invalid user_action_kbn'
     end
   end
