@@ -28,4 +28,12 @@ class DlTernActionForm
     end
     DlTernActionService.new(@hand_id, @user_id, @action_kbn)
   end
+
+  def tern_user?
+    hand = Hand.find_by_id(@hand_id)
+    if (hand == nil)
+      return false
+    end
+    return hand.tern_user.id == @user_id
+  end
 end

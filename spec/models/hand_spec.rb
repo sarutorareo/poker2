@@ -202,4 +202,28 @@ RSpec.describe Hand, type: :model do
       end
     end
   end
+
+  describe 'tern_user?' do
+    before do
+      @user_1 = FactoryGirl.create(:user)
+      @user_2 = FactoryGirl.create(:user)
+      @room = Room.find(1)
+      button_user = @user_1
+      @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: @user_1
+    end
+    context 'tern_userなら' do
+      before do
+      end
+      it 'trueを返す' do
+        expect(@hand.tern_user?(@user_1.id)).to eq(true)
+      end
+    end
+    context 'tern_userではないユーザーのアクションなら' do
+      before do
+      end
+      it 'falseを返す' do
+        expect(@hand.tern_user?(@user_2.id)).to eq(false)
+      end
+    end
+  end
 end

@@ -51,4 +51,8 @@ class Hand < ApplicationRecord
     end
     return self.hand_users[self.hand_users.count-1].tern_order
   end
+
+  def tern_user?(user_id)
+    return self.tern_user.id == user_id.to_i
+  end
 end
