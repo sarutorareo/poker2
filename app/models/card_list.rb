@@ -1,0 +1,2 @@
+class CardList < Array
+end
