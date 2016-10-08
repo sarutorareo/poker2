@@ -13,18 +13,18 @@ RSpec.describe DlTernActionService, type: :service do
       @hand.save!
 
       @data = {}
-      @data['hand_id'] = 0
-      @data['user_id'] = 0
-      @data['chip'] = 0
-      @data['action_kbn'] = TernAction::ACT_KBN_NULL
+      @data[:hand_id] = 0
+      @data[:user_id] = 0
+      @data[:chip] = 0
+      @data[:action_kbn] = TernAction::ACT_KBN_NULL
     end
     context 'tern_userの場合' do
       context 'user_1がfoldした場合' do
         before do
           @action_kbn = TernAction::ACT_KBN_FOLD
-          @data['hand_id'] = @hand.id
-          @data['user_id'] = @user_1.id
-          @data['action_kbn'] = @action_kbn
+          @data[:hand_id] = @hand.id
+          @data[:user_id] = @user_1.id
+          @data[:action_kbn] = @action_kbn
           df = DlTernActionForm.new(@data)
           @ds = df.build_service
         end
@@ -46,9 +46,9 @@ RSpec.describe DlTernActionService, type: :service do
           @hand.tern_user = @user_2
           @hand.save!
 
-          @data['hand_id'] = @hand.id
-          @data['user_id'] = @user_2.id
-          @data['action_kbn'] = @action_kbn
+          @data[:hand_id] = @hand.id
+          @data[:user_id] = @user_2.id
+          @data[:action_kbn] = @action_kbn
           df = DlTernActionForm.new(@data)
           @ds = df.build_service
         end
@@ -69,9 +69,9 @@ RSpec.describe DlTernActionService, type: :service do
       context 'user_2がcallした場合' do
         before do
           @action_kbn = TernAction::ACT_KBN_CALL
-          @data['hand_id'] = @hand.id
-          @data['user_id'] = @user_2.id
-          @data['action_kbn'] = @action_kbn
+          @data[:hand_id] = @hand.id
+          @data[:user_id] = @user_2.id
+          @data[:action_kbn] = @action_kbn
           df = DlTernActionForm.new(@data)
           @ds = df.build_service
         end

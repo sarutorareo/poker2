@@ -4,6 +4,7 @@ class DlTernActionService
     @user_id = user_id
     @action_kbn = action_kbn
   end
+
   def do!()
     hand = Hand.find(@hand_id)
     unless hand.tern_user?(@user_id)
@@ -16,8 +17,8 @@ class DlTernActionService
     end
     ApplicationRecord.transaction do
       hand_user.last_action_kbn = @action_kbn
-      hand_user.save!
       hand.rotate_tern!
+      hand_user.save!
       hand.save!
     end
   end

@@ -231,4 +231,32 @@ RSpec.describe Hand, type: :model do
       end
     end
   end
+  describe "rotated_all?" do
+    before do
+      @user_1 = FactoryGirl.create(:user)
+      @user_2 = FactoryGirl.create(:user)
+      @room = Room.find(1)
+      button_user = @user_1
+      @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: @user_1
+      @hand.users << @user_1
+      @hand.users << @user_2
+    end
+    context '全員回ってなかったら' do 
+      before do
+      end
+      it 'falseを返す' do
+        expect(@hand.rotated_all?).to eq(false)
+      end
+    end
+    context '全員回ったら' do 
+      before do
+      end
+      it 'trueを返す' do
+        @hand.hand_users.each do |hu|
+          hu.last_action_kbn = TernAction::ACT_KBN_FOLD
+        end
+        expect(@hand.rotated_all?).to eq(true)
+      end
+    end
+  end
 end

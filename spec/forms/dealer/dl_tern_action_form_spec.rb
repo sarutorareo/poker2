@@ -4,10 +4,10 @@ RSpec.describe DlTernActionForm, type: :form do
   describe 'recieve' do
     it 'パラメータを受け取る' do
       data = {}
-      data['hand_id'] = 3
-      data['user_id'] = 1
-      data['action_kbn'] = 2
-      data['chip'] = 100
+      data[:hand_id] = 3
+      data[:user_id] = 1
+      data[:action_kbn] = 2
+      data[:chip] = 100
       form = DlTernActionForm.new(data)
       expect(form.hand_id).to eq(3)
       expect(form.user_id).to eq(1)
@@ -24,10 +24,10 @@ RSpec.describe DlTernActionForm, type: :form do
       @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: @user_1
 
       @data = {}
-      @data['hand_id'] = @hand.id
-      @data['user_id'] = @user_1.id
-      @data['action_kbn'] = 2
-      @data['chip'] = 0
+      @data[:hand_id] = @hand.id
+      @data[:user_id] = @user_1.id
+      @data[:action_kbn] = 2
+      @data[:chip] = 0
     end
     context 'パラメータが空なら' do
       before do
@@ -48,7 +48,7 @@ RSpec.describe DlTernActionForm, type: :form do
     end
     context 'パラメータにuser_idとaction_kbnとhand_idがあるが、tern_userのアクションではない' do
       before do
-        @data['user_id'] = @user_2.id
+        @data[:user_id] = @user_2.id
       end
       it 'ターンユーザーでなくても valid?=true' do
         form = DlTernActionForm.new(@data)
@@ -57,7 +57,7 @@ RSpec.describe DlTernActionForm, type: :form do
     end
     context 'パラメータにhand_idがない' do
       before do
-        @data['hand_id'] = nil
+        @data[:hand_id] = nil
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -66,7 +66,7 @@ RSpec.describe DlTernActionForm, type: :form do
     end
     context 'パラメータにaction_kbnがない' do
       before do
-        @data['action_kbn'] = nil
+        @data[:action_kbn] = nil
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -75,7 +75,7 @@ RSpec.describe DlTernActionForm, type: :form do
     end
     context 'パラメータにuser_idがない' do
       before do
-        @data['user_id'] = nil
+        @data[:user_id] = nil
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -84,7 +84,7 @@ RSpec.describe DlTernActionForm, type: :form do
     end
     context 'action_kbnが範囲(FOLD, CALL, RAISE, ALL_IN)外' do
       before do
-        @data['action_kbn'] = 99
+        @data[:action_kbn] = 99
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -93,7 +93,7 @@ RSpec.describe DlTernActionForm, type: :form do
     end
     context 'action_kbnが(AKT_KBN_NULL)' do
       before do
-        @data['action_kbn'] = TernAction::ACT_KBN_NULL
+        @data[:action_kbn] = TernAction::ACT_KBN_NULL
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -119,10 +119,10 @@ RSpec.describe DlTernActionForm, type: :form do
     end
     context 'formに渡すパラメータが正しい時' do
       before do
-        @data['hand_id'] = @hand.id
-        @data['user_id'] = @user_1.id
-        @data['action_kbn'] = 2
-        @data['chip'] = 100
+        @data[:hand_id] = @hand.id
+        @data[:user_id] = @user_1.id
+        @data[:action_kbn] = 2
+        @data[:chip] = 100
       end
       it 'サービスが作られる' do
         form = DlTernActionForm.new(@data)
@@ -130,6 +130,5 @@ RSpec.describe DlTernActionForm, type: :form do
         expect(srv).not_to eq(nil)
       end
     end
-
   end
 end

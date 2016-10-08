@@ -16,6 +16,7 @@ class Hand < ApplicationRecord
       self.users << user
     end
   end
+
   def start_hand!( user_ids )
     create_hand_users!( user_ids )
     rotate_tern!
@@ -45,6 +46,7 @@ class Hand < ApplicationRecord
     user = User.find(self.hand_users[index].user_id)
     self.tern_user = user
   end
+
   def get_max_hand_user_order
     if self.hand_users.count == 0
       return 0
@@ -54,5 +56,14 @@ class Hand < ApplicationRecord
 
   def tern_user?(user_id)
     return self.tern_user.id == user_id.to_i
+  end
+
+  def rotated_all?
+    self.hand_users.each do |hand_user|
+      if hand_user.last_action_kbn == TernAction::ACT_KBN_NULL
+        return false
+      end
+    end
+    return true
   end
 end

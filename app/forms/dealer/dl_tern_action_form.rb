@@ -3,7 +3,7 @@ class DlTernActionForm
 
   attr_reader :hand_id, :user_id, :action_kbn, :chip
 
-  # user_idは必須
+  # hand_id, user_id, action_kbn, chip  は必須
   validates :hand_id, :user_id, :action_kbn, :chip,presence: true
   validates :action_kbn, inclusion: [
     TernAction::ACT_KBN_NULL,
@@ -16,10 +16,10 @@ class DlTernActionForm
   # Postパラメータを受け取る
   # (コンストラクタでreceiveを兼ねる)
   def initialize (data)
-    @hand_id = data['hand_id']
-    @user_id = data['user_id']
-    @action_kbn = data['action_kbn']
-    @chip = data['chip']
+    @hand_id = data[:hand_id]
+    @user_id = data[:user_id]
+    @action_kbn = data[:action_kbn]
+    @chip = data[:chip]
   end
 
   # サービスを生成
