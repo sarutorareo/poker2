@@ -17,11 +17,66 @@ class Card
     @no = no_
   end
 
+  def self.new_from_str(str)
+    rais ArgumentError, 'bad argument to card' if str.length != 2
+    result = Card.new(to_suit(str[0]), to_no(str[1]))
+  end
+
+  def to_s
+    result = ""
+    result += _get_suit_str
+    result += _get_no_str
+    return result
+  end
+
+  def self.to_suit(suit_str)
+    return case suit_str.upcase
+      when 'S' then ST_SPADE
+      when 'H' then ST_HEART
+      when 'C' then ST_CLUB
+      when 'D' then ST_DIA
+      else raise 'invalid suit'
+    end
+  end
+
+  def self.to_no(no_str)
+    return case no_str
+      when 'A' then 1
+      when 'K' then 13
+      when 'Q' then 12
+      when 'J' then 11
+      when 'T' then 10
+      else no_str.to_i
+    end
+  end
+
   private
   def _check_range_suit(suit)
-    raise "ivalid suit #{suit}" if (!SUITS.include?(suit))
+    raise ArgumentError, "ivalid suit #{suit}" if (!SUITS.include?(suit))
   end
+  
   def _check_range_no(no)
-    raise "ivalid no #{no}" if (no < 1 || no > 13)
+    raise ArgumentError, "ivalid no #{no}" if (no < 1 || no > 13)
+  end
+
+  def _get_suit_str
+    return case self.suit
+      when ST_SPADE then 'S'
+      when ST_HEART then 'H'
+      when ST_CLUB then 'C'
+      when ST_DIA then 'D'
+      else raise 'invalid suit'
+    end
+  end
+
+  def _get_no_str
+    return case self.no
+      when 1 then 'A'
+      when 13 then 'K'
+      when 12 then 'Q'
+      when 11 then 'J'
+      when 10 then 'T'
+      else self.no.to_s
+    end
   end
 end

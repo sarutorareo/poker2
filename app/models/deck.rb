@@ -7,8 +7,11 @@ class Deck < CardList
       end
     end
   end
-
-  def shuffle!
-    self.sort! {|a, b| srand % 2 == 0? -1: +1}
+  def self.new_from_str(str)
+    if (str == nil)
+      return Deck.new
+    else
+      return super(str)
+    end
   end
 end

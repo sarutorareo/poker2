@@ -259,4 +259,44 @@ RSpec.describe Hand, type: :model do
       end
     end
   end
+  describe "deckとdeck_str" do
+    context 'new直後' do
+      it '52枚分の文字列が取れる' do
+        hand = Hand.new
+        expect(hand.deck.count).to eq(52)
+      end
+    end
+    context 'createしてからsaveしてロードする場合' do
+      before do
+        @user_1 = FactoryGirl.create(:user)
+        @room = Room.find(1)
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+      end
+      it 'create直後は52枚' do
+        expect(@hand.deck.count).to eq(52)
+      end
+      it 'saveしてロードすると、52枚が復活する' do
+        @hand.save!
+        @hand = Hand.find(@hand.id)
+        expect(@hand.deck.count).to eq(52)
+        expect(@hand.deck_str.length).to eq(52*2)
+      end
+    end
+    context 'create,カード削除, saveしてからロードした場合' do
+      before do
+        @user_1 = FactoryGirl.create(:user)
+        @room = Room.find(1)
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+      end
+      it 'カードを抜いてからsaveしてロードすると、deckの状態が復元する' do
+        (1..50).each do 
+          @hand.deck.shift
+        end
+        @hand.save!
+        @hand = Hand.find(@hand.id)
+        expect(@hand.deck_str).to eq('DQDK')
+        expect(@hand.deck.to_s).to eq('DQDK')
+      end
+    end
+  end
 end
