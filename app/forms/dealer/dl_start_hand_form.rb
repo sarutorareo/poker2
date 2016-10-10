@@ -1,4 +1,4 @@
-class DlJudgeActionWinnerForm
+class DlStartHandForm
   include ActiveModel::Model
 
   attr_reader :hand_id
@@ -12,10 +12,10 @@ class DlJudgeActionWinnerForm
 
   def build_service 
     if self.invalid?
-      raise ArgumentError, "DlJudgeActionWinnerFormの引数が不正 error=#{self.errors}"
+      raise ArgumentError, "DlStartHandFormの引数が不正 error=#{self.errors}"
     end
 
-    DlJudgeActionWinnerService.new(@hand_id)
+    DlStartHandService.new(@hand_id)
   end
 end
 

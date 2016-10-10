@@ -90,27 +90,46 @@ RSpec.describe Hand, type: :model do
       end
     end
   end
+  describe "start_hand" do
+    before do
+      @user_1 = FactoryGirl.create(:user)
+      @user_2 = FactoryGirl.create(:user)
+      @user_3 = FactoryGirl.create(:user)
+      @room = Room.find(1)
+      @room.users << @user_1
+      @room.users << @user_2
+      @room.users << @user_3
+      @button_user = @user_1
+      @hand = Hand.create! room_id: @room.id, button_user: @button_user, tern_user: @user_2
+    end
+    context "start_handをしたら" do 
+      it "handのusersが作られる" do
+        expect(@hand.users.count).to eq(0)
+        @hand.start_hand!( @room.get_room_user_ids )
+        expect(@hand.users.count).to eq(3)
+        expect(@hand.users[0].id).to eq(@user_1.id)
+        expect(@hand.users[1].id).to eq(@user_2.id)
+        expect(@hand.users[2].id).to eq(@user_3.id)
+
+        expect(@hand.button_user.id).to eq(@user_1.id)
+        expect(@hand.tern_user.id).to eq(@user_2.id)
+      end
+    end
+  end
   describe "rotate_tern" do
     before do
       @user_1 = FactoryGirl.create(:user)
       @user_2 = FactoryGirl.create(:user)
-      @user3 = FactoryGirl.create(:user)
+      @user_3 = FactoryGirl.create(:user)
       @room = Room.find(1)
       @room.users << @user_1
       @room.users << @user_2
-      @room.users << @user3
+      @room.users << @user_3
       @button_user = @user_1
-      @hand = Hand.create! room_id: @room.id, button_user: @button_user, tern_user: @button_user
+      @hand = Hand.create! room_id: @room.id, button_user: @button_user, tern_user: @user_2
     end
     context "Create直後" do 
-      it "ボタンユーザーがターンユーザー" do
-        expect(@hand.tern_user.id).to eq(@button_user.id)
-        expect(@hand.tern_user.id).to eq(@user_1.id)
-      end
-    end
-    context "start_handをしたら" do 
-      it "ボタンユーザーの次の人がターンユーザー" do
-        @hand.start_hand!( @room.get_room_user_ids )
+      it "user_2がターンユーザー" do
         expect(@hand.tern_user.id).to eq(@user_2.id)
       end
     end
@@ -118,14 +137,14 @@ RSpec.describe Hand, type: :model do
       it "３人目の人がターンユーザー" do
         @hand.start_hand!( @room.get_room_user_ids )
         @hand.rotate_tern!
-        expect(@hand.tern_user.id).to eq(@user3.id)
+        expect(@hand.tern_user.id).to eq(@user_3.id)
       end
     end
     context "start_hand後、rotate, さらにrotateをしたら" do 
       it "1人目の人がターンユーザー" do
         @hand.start_hand!( @room.get_room_user_ids )
         @hand.rotate_tern!
-        expect(@hand.tern_user.id).to eq(@user3.id)
+        expect(@hand.tern_user.id).to eq(@user_3.id)
         @hand.rotate_tern!
         expect(@hand.tern_user.id).to eq(@user_1.id)
       end
@@ -261,7 +280,7 @@ RSpec.describe Hand, type: :model do
   end
   describe "deckとdeck_str" do
     context 'new直後' do
-      it '52枚分の文字列が取れる' do
+      it '52枚分のカードを持っている' do
         hand = Hand.new
         expect(hand.deck.count).to eq(52)
       end

@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'support/card_support'
 
 RSpec.describe CardList, type: :model do
   describe 'new_from_str' do
@@ -42,17 +43,6 @@ RSpec.describe CardList, type: :model do
     end
   end
   describe 'shuffle' do
-    def _comp_card_list(list1, list2)
-      (0..list1.count-1).each do |idx| 
-        suit1 = list1[idx].suit
-        suit2 = list2[idx].suit
-        no1 = list1[idx].no
-        no2 = list2[idx].no
-        return false if suit1 != suit2
-        return false if no1 != no2
-      end
-      return true
-    end
     before do
       @card_list_1 = CardList.new_from_str("")
       Card::SUITS.each do |suit|
@@ -66,7 +56,7 @@ RSpec.describe CardList, type: :model do
     it 'ランダムにソートされる' do
       @card_list_1.shuffle!
       @card_list_2.shuffle!
-      expect(_comp_card_list(@card_list_1, @card_list_2)).to eq(false)
+      expect(CardSupport.comp_card_list_order(@card_list_1, @card_list_2)).to eq(false)
     end
   end
 

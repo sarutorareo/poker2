@@ -4,8 +4,8 @@ class Hand < ApplicationRecord
   belongs_to :button_user, class_name: "User", foreign_key: "button_user_id"
   belongs_to :tern_user, class_name: "User", foreign_key: "tern_user_id"
   belongs_to :room
-  has_many :hand_users, ->{ order(:tern_order) }
-  has_many :users, through: :hand_users
+  has_many :hand_users, ->{ order(:tern_order) }, autosave: true
+  has_many :users, through: :hand_users, autosave: true
   after_commit { 
     # ジョブを作成
     HandUsersBroadcastJob.set(wait: WAIT_TIME_HAND_USERS_BROAD_CAST_JOB.second).perform_later self.room_id, self.id
@@ -29,11 +29,7 @@ class Hand < ApplicationRecord
   end
 
   def start_hand!( user_ids )
-    (1..10).each do
-      @deck.shuffle!
-    end
     create_hand_users!( user_ids )
-    rotate_tern!
   end
 
   def get_tern_user_index

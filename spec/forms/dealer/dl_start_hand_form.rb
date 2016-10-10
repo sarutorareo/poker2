@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe DlStartHandForm, type: :form do
+RSpec.describe DlJudgeActionWinnerForm, type: :form do
   describe 'recieve' do
     it 'パラメータを受け取る' do
       data = {}
       data[:hand_id] = 3
-      form = DlStartHandForm.new(data)
+      form = DlJudgeActionWinnerForm.new(data)
       expect(form.hand_id).to eq(3)
     end
   end
@@ -20,7 +20,7 @@ RSpec.describe DlStartHandForm, type: :form do
         @data = {}
       end
       it 'valid?=false' do
-        form = DlStartHandForm.new(@data)
+        form = DlJudgeActionWinnerForm.new(@data)
         expect(form.valid?).to eq(false)
       end
     end
@@ -30,7 +30,7 @@ RSpec.describe DlStartHandForm, type: :form do
         @data[:hand_id] = '1'
       end
       it 'valid?=true' do
-        form = DlStartHandForm.new(@data)
+        form = DlJudgeActionWinnerForm.new(@data)
         expect(form.valid?).to eq(true)
       end
     end
@@ -43,7 +43,7 @@ RSpec.describe DlStartHandForm, type: :form do
       before do
       end
       it '例外が発生する' do
-        form = DlStartHandForm.new(@data)
+        form = DlJudgeActionWinnerForm.new(@data)
         expect do
           form.build_service
         end.to raise_error(ArgumentError)
@@ -54,7 +54,7 @@ RSpec.describe DlStartHandForm, type: :form do
         @data[:hand_id] = 3
       end
       it 'サービスが作られる' do
-        form = DlStartHandForm.new(@data)
+        form = DlJudgeActionWinnerForm.new(@data)
         srv = form.build_service
         expect(srv).not_to eq(nil)
       end

@@ -1,9 +1,21 @@
 class HandUser < ApplicationRecord
+  attr_reader :user_hand
+
   belongs_to :hand
   belongs_to :user
   before_create { 
     _set_order
     _set_chip
+  }
+
+  # DB書き込み前に、deck_strをdeckに合わせる
+  before_validation {
+    self.user_hand_str = user_hand.to_s
+  }
+
+  # DB読み込み後に、user_handをuser_hand_strに合わせる
+  after_initialize {
+    @user_hand = CardList.new_from_str(self.user_hand_str)
   }
 
   def last_action_str

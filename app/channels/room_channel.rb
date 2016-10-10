@@ -36,11 +36,12 @@ class RoomChannel < ApplicationCable::Channel
 
   def start_hand(data)
     p "############### start_hand"
-    button_user = User.find(data['user_id']) unless data['user_id'].blank?
-    room = Room.find(params[:room_id])
-    hand = Hand.create! room_id: data['room_id'], button_user: button_user, tern_user: button_user
-    hand.start_hand!(room.get_room_user_ids)
-    hand.save!
+
+    # 新たなハンドを作成する
+    hand = _create_new_hand(data)
+
+    # 新たなハンドを開始する
+    _start_hand(data['room_id'], hand.id)
   end
 
   def tern_action(data)
@@ -98,5 +99,36 @@ private
     srv.do!()
 
     return srv.winner_user_id
+  end
+
+  # 新たなハンドを作成する
+  def _create_new_hand(data)
+    button_user = User.find(data['user_id']) unless data['user_id'].blank?
+    room = Room.find(params[:room_id])
+    hand = Hand.create! room_id: data['room_id'], button_user: button_user, tern_user: button_user
+    hand.start_hand!(room.get_room_user_ids)
+    hand.save!
+    return hand
+  end
+
+  # 新たなハンドを開始する
+  def _start_hand(room_id, hand_id)
+    p "############## _start_hand"
+    df = DlStartHandForm.new({
+        :hand_id => hand_id
+      })
+    srv = df.build_service
+    srv.do!()
+
+    p "############## after srv.do!"
+
+    hand = Hand.find(hand_id)
+    hand.hand_users.each do |hu|
+      #SendCardsJob.set(wait: WAIT_TIME_SEND_CARD_JOB.second).perform_later user.id
+
+      p "############## before send_message"
+
+      Message.create! content: "send #{hu.user.name} to #{hu.user_hand.to_s}", room_id: room_id, user_name: 'dealer'
+    end
   end
 end
