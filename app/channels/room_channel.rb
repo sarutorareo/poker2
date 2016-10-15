@@ -36,7 +36,6 @@ class RoomChannel < ApplicationCable::Channel
 
   def start_hand(data)
     p "############### start_hand"
-
     # 新たなハンドを作成する
     hand = _create_new_hand(data)
 
@@ -81,11 +80,11 @@ private
 
   # ユーザーのアクションを処理する
   def _accept_user_action(data)
+    p "############## before create DLTernActionForm"
     df = DlTernActionForm.new( {
         :hand_id => data['hand_id'],
         :user_id => data['user_id'],
-        :action_kbn => data['action_kbn'],
-        :chip => data['chip']
+        :tern_action => TernAction.new_from_kbn_and_chip(data['action_kbn'], data['chip'])
       })
     srv = df.build_service
     srv.do!()

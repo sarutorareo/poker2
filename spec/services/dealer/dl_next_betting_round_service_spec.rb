@@ -27,14 +27,14 @@ RSpec.describe DlStartHandService, type: :service do
       end
       it '全員のactionがTernAction::ACT_KBN_NULLになっている' do
         @hand.hand_users.each do |hu|
-          hu.last_action_kbn = TernAction::ACT_KBN_CALL_ALL_IN
+          hu.last_action = TernActionCall.new(100)
           hu.save!
         end
         @hand.save!
         @ds.do!
         @hand = Hand.find(@hand.id)
         @hand.hand_users.each do |hu|
-          expect(hu.last_action_kbn).to eq(TernAction::ACT_KBN_NULL)
+          expect(hu.last_action.kind_of?(TernActionNull)).to eq(true)
         end
       end
     end

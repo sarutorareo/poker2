@@ -12,8 +12,8 @@
       <th><%= hand.button_user.id == hu.user_id ? "●":"" %></th>
       <th><%= hand.tern_user.id == hu.user_id ? "●":"" %></th>
       <th><%= hu.user.name %></th>
-      <th><%= hu.last_action_str %></th>
-      <th><%= hu.chip %></th>
+      <th><%= hu.last_action_kbn_str %></th>
+      <th><%= hu.last_action_chip %></th>
     </tr>
   <% end %>
 </table>

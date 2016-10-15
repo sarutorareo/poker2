@@ -9,7 +9,8 @@ class DlNextBettingRoundService
     hand.next_betting_round
     # ユーザーのアクションをリセット
     hand.hand_users.each do |hu|
-      hu.last_action_kbn = TernAction::ACT_KBN_NULL
+      hu.last_action = TernActionNull.new
+      hu.save!
     end
     # ボードにカードを出す
     _set_board(hand)
