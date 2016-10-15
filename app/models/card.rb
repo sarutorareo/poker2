@@ -29,6 +29,13 @@ class Card
     return result
   end
 
+  def to_disp_s
+    result = ""
+    result += _get_suit_disp_str
+    result += _get_no_str
+    return result
+  end
+
   def self.to_suit(suit_str)
     return case suit_str.upcase
       when 'S' then ST_SPADE
@@ -65,6 +72,16 @@ class Card
       when ST_HEART then 'H'
       when ST_CLUB then 'C'
       when ST_DIA then 'D'
+      else raise 'invalid suit'
+    end
+  end
+
+  def _get_suit_disp_str
+    return case self.suit
+      when ST_SPADE then '♠'
+      when ST_HEART then '♥'
+      when ST_CLUB then '♣'
+      when ST_DIA then '♦'
       else raise 'invalid suit'
     end
   end

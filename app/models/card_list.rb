@@ -20,4 +20,12 @@ class CardList < Array
     end
     return result
   end
+
+  def to_disp_s
+    result = ""
+    self.each do |c|
+      result += c.to_disp_s
+    end
+    return result
+  end
 end

@@ -72,4 +72,16 @@ RSpec.describe CardList, type: :model do
       expect(@card_list_1.to_s).to eq("HAH2H3")
     end
   end
+  describe 'to_disp_s' do
+    before do
+      @card_list_1 = CardList.new_from_str("")
+      (1..3).each do |no|
+        card = Card.new(Card::ST_HEART, no)
+        @card_list_1 << card
+      end
+    end
+    it '連続した文字列にする' do
+      expect(@card_list_1.to_disp_s).to eq("♥A♥2♥3")
+    end
+  end
 end

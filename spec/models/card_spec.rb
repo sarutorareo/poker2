@@ -37,6 +37,13 @@ RSpec.describe Card, type: :model do
       expect(card.to_s).to eq("HT")
     end
   end
+  describe 'to_disp_s' do
+    it 'Clubの13 文字列表現できる' do
+      card = Card.new(Card::ST_CLUB, 13)
+      expect(card.to_disp_s).to eq("♣K")
+    end
+
+  end
   describe 'new_from_str' do
     it 'Heartの10 文字列からカードを作れる' do
       card = Card.new_from_str("HT")

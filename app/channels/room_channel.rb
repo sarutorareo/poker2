@@ -126,7 +126,7 @@ private
     # 配ったカードをクライアント毎に送る
     hand = Hand.find(hand_id)
     hand.hand_users.each do |hu|
-      DealCardsJob.perform_later room_id, hu.user.id, hu.user_hand.to_s
+      DealCardsJob.perform_later room_id, hu.user.id, hu.user_hand.to_disp_s
     end
   end
 
@@ -151,6 +151,6 @@ private
   end
 
   def _send_board(room_id, hand_id)
-    SendBoardJob.perform_later room_id, Hand.find(hand_id).board_str
+    SendBoardJob.perform_later room_id, Hand.find(hand_id).board.to_disp_s
   end
 end
