@@ -1,7 +1,8 @@
 ACT_KBN_FOLD = 0
 ACT_KBN_CALL = 1
 ACT_KBN_RAISE = 2
-ACT_KBN_ALL_IN = 3
+ACT_KBN_CALL_ALL_IN = 3
+ACT_KBN_RAISE_ALL_IN = 4
 
 App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#room_id').val(), user_id: $('#user_id').val()},
 

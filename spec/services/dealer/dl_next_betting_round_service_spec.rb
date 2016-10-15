@@ -27,7 +27,7 @@ RSpec.describe DlStartHandService, type: :service do
       end
       it '全員のactionがTernAction::ACT_KBN_NULLになっている' do
         @hand.hand_users.each do |hu|
-          hu.last_action_kbn = TernAction::ACT_KBN_ALL_IN
+          hu.last_action_kbn = TernAction::ACT_KBN_CALL_ALL_IN
           hu.save!
         end
         @hand.save!

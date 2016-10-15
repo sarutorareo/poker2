@@ -1,8 +1,8 @@
 class DlTernActionService
-  def initialize(hand_id, user_id, action_kbn)
+  def initialize(hand_id, user_id, tern_action)
     @hand_id = hand_id
     @user_id = user_id
-    @action_kbn = action_kbn
+    @tern_action = tern_action
   end
 
   def do!()
@@ -16,7 +16,7 @@ class DlTernActionService
       raise "hand_user not found (hand_id=#{@hand_id}, user_id=#{@user_id}"
     end
     ApplicationRecord.transaction do
-      hand_user.last_action_kbn = @action_kbn
+      hand_user.last_action = @tern_action
       hand.rotate_tern!
       hand_user.save!
       hand.save!

@@ -26,48 +26,75 @@ RSpec.describe HandUser, type: :model do
       end
     end
   end
-  describe '#last_action_str' do
+  describe 'last_actionと#last_action_kbn_str' do
     before do
       @hand_user = HandUser.new
     end
     context 'foldの場合' do
       before do
-        @hand_user.last_action_kbn = TernAction::ACT_KBN_FOLD
+        @hand_user.last_action = TernActionFold.new
       end
       it '"fold"が返される' do
-        expect(@hand_user.last_action_str).to eq('fold')
+        expect(@hand_user.last_action_kbn_str).to eq('fold')
       end
     end
     context 'callの場合' do
       before do
-        @hand_user.last_action_kbn = TernAction::ACT_KBN_CALL
+        @hand_user.last_action = TernActionCall.new(100)
       end
       it '"call"が返される' do
-        expect(@hand_user.last_action_str).to eq('call')
+        expect(@hand_user.last_action_kbn_str).to eq('call')
       end
     end
     context 'raiseの場合' do
       before do
-        @hand_user.last_action_kbn = TernAction::ACT_KBN_RAISE
+        @hand_user.last_action = TernActionRaise.new(100)
       end
       it '"raise"が返される' do
-        expect(@hand_user.last_action_str).to eq('raise')
+        expect(@hand_user.last_action_kbn_str).to eq('raise')
       end
     end
-    context 'all_inの場合' do
+    context 'call_all_inの場合' do
       before do
-        @hand_user.last_action_kbn = TernAction::ACT_KBN_ALL_IN
+        @hand_user.last_action = TernActionCallAllIn.new(100)
       end
-      it '"all_in"が返される' do
-        expect(@hand_user.last_action_str).to eq('all_in')
+      it '"all_in(call)"が返される' do
+        expect(@hand_user.last_action_kbn_str).to eq('all_in(call)')
+      end
+    end
+    context 'raise_all_inの場合' do
+      before do
+        @hand_user.last_action = TernActionRaiseAllIn.new(100)
+      end
+      it '"all_in(raise)"が返される' do
+        expect(@hand_user.last_action_kbn_str).to eq('all_in(raise)')
       end
     end
     context 'nullの場合' do
       before do
-        @hand_user.last_action_kbn = nil
+        @hand_user.last_action = TernActionNull.new
       end
       it '"-"が返される' do
-        expect(@hand_user.last_action_str).to eq('-')
+        expect(@hand_user.last_action_kbn_str).to eq('-')
+      end
+    end
+    context 'save, loadしたとき' do
+      before do
+        @user_1 = FactoryGirl.create(:user)
+        @room = Room.find(1)
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+        @hand.users << @user_1
+      end
+      it 'save, loadで復旧する' do
+        hand_user = @hand.hand_users[0]
+        hand_user.last_action = TernActionCall.new(100)
+        hand_user.save!
+
+        hand_user = HandUser.find(hand_user.id)
+        expect(hand_user.last_action.kbn_str).to eq('call')
+        expect(hand_user.last_action.chip).to eq(100)
+        expect(hand_user.last_action_kbn_str).to eq('call')
+        expect(hand_user.last_action_chip).to eq(100)
       end
     end
   end

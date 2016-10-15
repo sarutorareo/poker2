@@ -15,27 +15,25 @@ RSpec.describe DlTernActionService, type: :service do
       @data = {}
       @data[:hand_id] = 0
       @data[:user_id] = 0
-      @data[:chip] = 0
-      @data[:action_kbn] = TernAction::ACT_KBN_NULL
+      @data[:tern_action] = TernActionNull
     end
     context 'tern_userの場合' do
       context 'user_1がfoldした場合' do
         before do
-          @action_kbn = TernAction::ACT_KBN_FOLD
           @data[:hand_id] = @hand.id
           @data[:user_id] = @user_1.id
-          @data[:action_kbn] = @action_kbn
+          @data[:tern_action] = TernActionFold.new
           df = DlTernActionForm.new(@data)
           @ds = df.build_service
         end
-        it 'hand_userのaction_kbnが更新される' do
+        it 'hand_userのactionが更新される' do
           expect(@hand.tern_user.id).to eq(@user_1.id)
 
           @ds.do!()
           @hand = Hand.find(@hand.id)
           #user_1のlast_actionが更新されている
           hand_user = @hand.hand_users.where(:user_id => @user_1.id).first
-          expect(hand_user.last_action_kbn).to eq(@action_kbn)
+          expect(hand_user.last_action.kind_of?(TernActionFold)).to eq(true)
           #tern_userはuser_2になる
           expect(@hand.tern_user.id).to eq(@user_2.id)
         end
@@ -48,7 +46,7 @@ RSpec.describe DlTernActionService, type: :service do
 
           @data[:hand_id] = @hand.id
           @data[:user_id] = @user_2.id
-          @data[:action_kbn] = @action_kbn
+          @data[:tern_action] = TernActionCall.new(100)
           df = DlTernActionForm.new(@data)
           @ds = df.build_service
         end
@@ -71,7 +69,7 @@ RSpec.describe DlTernActionService, type: :service do
           @action_kbn = TernAction::ACT_KBN_CALL
           @data[:hand_id] = @hand.id
           @data[:user_id] = @user_2.id
-          @data[:action_kbn] = @action_kbn
+          @data[:tern_action] = TernActionCall.new(100)
           df = DlTernActionForm.new(@data)
           @ds = df.build_service
         end

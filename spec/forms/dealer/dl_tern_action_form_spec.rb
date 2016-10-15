@@ -6,13 +6,12 @@ RSpec.describe DlTernActionForm, type: :form do
       data = {}
       data[:hand_id] = 3
       data[:user_id] = 1
-      data[:action_kbn] = 2
-      data[:chip] = 100
+      data[:tern_action] = TernActionRaise.new(100)
       form = DlTernActionForm.new(data)
       expect(form.hand_id).to eq(3)
       expect(form.user_id).to eq(1)
-      expect(form.action_kbn).to eq(2)
-      expect(form.chip).to eq(100)
+      expect(form.tern_action.kbn).to eq(TernAction::ACT_KBN_RAISE)
+      expect(form.tern_action.chip).to eq(100)
     end
   end
   describe 'valid' do
@@ -26,8 +25,7 @@ RSpec.describe DlTernActionForm, type: :form do
       @data = {}
       @data[:hand_id] = @hand.id
       @data[:user_id] = @user_1.id
-      @data[:action_kbn] = 2
-      @data[:chip] = 0
+      @data[:tern_action] = TernActionRaise
     end
     context 'パラメータが空なら' do
       before do
@@ -64,9 +62,9 @@ RSpec.describe DlTernActionForm, type: :form do
         expect(form.valid?).to eq(false)
       end
     end
-    context 'パラメータにaction_kbnがない' do
+    context 'パラメータにtern_actionがない' do
       before do
-        @data[:action_kbn] = nil
+        @data[:tern_action] = nil
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -82,18 +80,9 @@ RSpec.describe DlTernActionForm, type: :form do
         expect(form.valid?).to eq(false)
       end
     end
-    context 'action_kbnが範囲(FOLD, CALL, RAISE, ALL_IN)外' do
-      before do
-        @data[:action_kbn] = 99
-      end
-      it 'valid?=false' do
-        form = DlTernActionForm.new(@data)
-        expect(form.valid?).to eq(false)
-      end
-    end
     context 'action_kbnが(AKT_KBN_NULL)' do
       before do
-        @data[:action_kbn] = TernAction::ACT_KBN_NULL
+        @data[:tern_action] = TernActionNull.new
       end
       it 'valid?=false' do
         form = DlTernActionForm.new(@data)
@@ -121,8 +110,7 @@ RSpec.describe DlTernActionForm, type: :form do
       before do
         @data[:hand_id] = @hand.id
         @data[:user_id] = @user_1.id
-        @data[:action_kbn] = 2
-        @data[:chip] = 100
+        @data[:tern_action] = TernActionRaise.new(100)
       end
       it 'サービスが作られる' do
         form = DlTernActionForm.new(@data)

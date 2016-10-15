@@ -1,5 +1,6 @@
 class HandUser < ApplicationRecord
-  attr_reader :user_hand
+  attr_reader :user_hand, :last_action
+  attr_accessor :last_action
 
   belongs_to :hand
   belongs_to :user
@@ -11,15 +12,18 @@ class HandUser < ApplicationRecord
   # DB書き込み前に、deck_strをdeckに合わせる
   before_validation {
     self.user_hand_str = user_hand.to_s
+    self.last_action_kbn = last_action.kbn
+    self.last_action_chip = last_action.chip
   }
 
   # DB読み込み後に、user_handをuser_hand_strに合わせる
   after_initialize {
     @user_hand = CardList.new_from_str(self.user_hand_str)
+    @last_action = TernAction.new_from_kbn_and_chip(self.last_action_kbn, self.last_action_chip)
   }
 
-  def last_action_str
-    return _act_kbn_to_str(self.last_action_kbn)
+  def last_action_kbn_str
+    return last_action.kbn_str
   end
 
 private
@@ -29,15 +33,5 @@ private
   end
   def _set_chip
     self.chip = self.user.chip
-  end
-  def _act_kbn_to_str(act_kbn)
-    return case act_kbn
-      when TernAction::ACT_KBN_FOLD then 'fold'
-      when TernAction::ACT_KBN_CALL then 'call'
-      when TernAction::ACT_KBN_RAISE then 'raise'
-      when TernAction::ACT_KBN_ALL_IN then 'all_in'
-      when TernAction::ACT_KBN_NULL then '-'
-      else raise 'invalid user_action_kbn'
-    end
   end
 end

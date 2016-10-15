@@ -1,25 +1,22 @@
 class DlTernActionForm
   include ActiveModel::Model
 
-  attr_reader :hand_id, :user_id, :action_kbn, :chip
+  attr_reader :hand_id, :user_id, :tern_action
 
   # hand_id, user_id, action_kbn, chip  は必須
-  validates :hand_id, :user_id, :action_kbn, :chip,presence: true
-  validates :action_kbn, inclusion: [
-    TernAction::ACT_KBN_NULL,
-    TernAction::ACT_KBN_FOLD,
-    TernAction::ACT_KBN_CALL,
-    TernAction::ACT_KBN_RAISE,
-    TernAction::ACT_KBN_ALL_IN
-  ] # 数値のみ有効
+  validates :hand_id, :user_id, :tern_action, presence: true
+  validate do
+    if tern_action.kind_of?(TernActionNull)  
+      errors.add(:tern_action, "TernActionNull is invalid")
+    end
+  end
 
   # Postパラメータを受け取る
   # (コンストラクタでreceiveを兼ねる)
   def initialize (data)
     @hand_id = data[:hand_id]
     @user_id = data[:user_id]
-    @action_kbn = data[:action_kbn]
-    @chip = data[:chip]
+    @tern_action = data[:tern_action]
   end
 
   # サービスを生成
@@ -27,7 +24,7 @@ class DlTernActionForm
     if self.invalid?
       raise ArgumentError, "DlTernActionFormの引数が不正 error=#{self.errors}"
     end
-    DlTernActionService.new(@hand_id, @user_id, @action_kbn)
+    DlTernActionService.new(@hand_id, @user_id, @tern_action)
   end
 
   def tern_user?
