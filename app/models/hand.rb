@@ -1,4 +1,9 @@
 class Hand < ApplicationRecord
+  BR_PREFLOP = 0
+  BR_FLOP = 1
+  BR_TURN = 2
+  BR_RIVER = 3
+
   attr_reader :deck
 
   belongs_to :button_user, class_name: "User", foreign_key: "button_user_id"
@@ -75,5 +80,22 @@ class Hand < ApplicationRecord
       end
     end
     return true
+  end
+
+  def betting_round_str
+    case self.betting_round
+      when 0 then 'preflop'
+      when 1 then 'flop'
+      when 2 then 'turn'
+      when 3 then 'river'
+      else raise 'invalid betting_round'
+    end
+  end
+
+  def next_betting_round
+    if (self.betting_round == BR_RIVER)
+      raise 'betting_round is over'
+    end
+    self.betting_round += 1
   end
 end

@@ -8,18 +8,23 @@ class DlJudgeActionWinnerService
 
   def do!()
     hand = Hand.find(@hand_id)
+    self.winner_user_id = nil
+    active_users = []
     hand.hand_users.each do |hu|
       if hu.last_action_kbn == TernAction::ACT_KBN_NULL
-        self.winner_user_id = nil
         return
       end
       if hu.last_action_kbn == TernAction::ACT_KBN_FOLD
         next
       end
-      self.winner_user_id = hu.user_id
-      break;
+      active_users << hu
     end
-    return false
+
+    if (active_users.count != 1)
+      return 
+    end
+
+    self.winner_user_id = active_users[0].user_id
   end
 end
 

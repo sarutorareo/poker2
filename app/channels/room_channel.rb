@@ -42,6 +42,9 @@ class RoomChannel < ApplicationCable::Channel
 
     # 新たなハンドを開始する
     _start_hand(data['room_id'], hand.id)
+
+    # betting_roundを表示する
+    _send_betting_round(data['room_id'], hand.id)
   end
 
   def tern_action(data)
@@ -55,15 +58,16 @@ class RoomChannel < ApplicationCable::Channel
     if Hand.find(data['hand_id']).rotated_all?
       Message.create! content: '一周した', room_id: data['room_id'], user_name: 'dealer'
       # 勝者を判定
-      winner = _judge_winner(data)
-      p "################"
-      p "winner is #{winner}"
-      unless winner.blank?
-        p "unless "
-        p MsgUtil.msg_winners(winner)
-        Message.create! content: MsgUtil.msg_winners(winner), room_id: data['room_id'], user_name: 'dealer'
+      action_winner = _judge_action_winner(data)
+      Message.create! content: "action_winner is #{action_winner}", room_id: data['room_id'], user_name: 'dealer'
+      if action_winner.blank?
+        p "############# _next_betting_round"
+        _next_betting_round(data['room_id'], data['hand_id'])
+      else
+        p "############# _send_winner_message"
+        _send_winner_message(data['room_id'], action_winner)
       end
-    #   srv.apply_pot(winners)
+    #   srv.apply_pot(action_winners)
     end
   end
 
@@ -90,14 +94,16 @@ private
     srv.do!()
   end
 
-  # 勝者を判定する
-  def _judge_winner(data)
+  # アクションによって決まる勝者(全員foldさせた人)を判定する
+  def _judge_action_winner(data)
+    p "############# in _judge_action_winner"
     df = DlJudgeActionWinnerForm.new({
         :hand_id => data['hand_id']
       })
     srv = df.build_service
     srv.do!()
 
+    p "############# after srv.do!"
     return srv.winner_user_id
   end
 
@@ -113,22 +119,37 @@ private
 
   # 新たなハンドを開始する
   def _start_hand(room_id, hand_id)
-    p "############## _start_hand"
+    # カードを配る
     df = DlStartHandForm.new({
         :hand_id => hand_id
       })
     srv = df.build_service
     srv.do!()
 
-    p "############## after srv.do!"
-
+    # 配ったカードをクライアント毎に送る
     hand = Hand.find(hand_id)
     hand.hand_users.each do |hu|
-      #SendCardsJob.set(wait: WAIT_TIME_SEND_CARD_JOB.second).perform_later user.id
-
-      p "############## before send_message"
-
-      Message.create! content: "send #{hu.user.name} to #{hu.user_hand.to_s}", room_id: room_id, user_name: 'dealer'
+      DealCardsJob.perform_later room_id, hu.user.id, hu.user_hand.to_s
     end
+  end
+
+  def _send_winner_message(room_id, action_winner)
+    Message.create! content: MsgUtil.msg_winners(action_winner), room_id: room_id, user_name: 'dealer'
+  end
+
+  def _next_betting_round(room_id, hand_id)
+    # ベッティングラウンドを進める
+    df = DlNextBettingRoundForm.new({
+        :hand_id => hand_id
+      })
+    srv = df.build_service
+    srv.do!()
+
+    _send_betting_round(room_id, hand_id)
+  end
+
+  def _send_betting_round(room_id, hand_id)
+    p "################## in _send_betting_round"
+    SendBettingRoundJob.perform_later room_id, Hand.find(hand_id).betting_round_str
   end
 end

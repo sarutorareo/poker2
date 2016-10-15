@@ -75,5 +75,17 @@ RSpec.describe DlJudgeActionWinnerService, type: :service do
         expect(@ds.winner_user_id).to eq(nil)
       end
     end
+    context '全員Callなら' do
+      before do
+        @hand.hand_users.each do |hu|
+          hu.last_action_kbn = TernAction::ACT_KBN_CALL
+          hu.save!
+        end
+      end
+      it 'srv.winnerにnilが入る' do
+        @ds.do!
+        expect(@ds.winner_user_id).to eq(nil)
+      end
+    end
   end
 end

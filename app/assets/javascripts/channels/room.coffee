@@ -24,6 +24,8 @@ App.room = App.cable.subscriptions.create {channel: "RoomChannel", room_id: $('#
       $('#room_users').html data['DOM_user_list']
     else if (data['type'] == "msg_hand_users")
       $('#hand_users').html data['DOM_hand_user_list']
+    else if (data['type'] == "msg_update_betting_round")
+      $('#betting_round').html data['DOM_betting_round']
     else
       alert('type not defined:'+ data['type'])
 

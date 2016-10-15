@@ -1,6 +1,29 @@
 require 'rails_helper'
 
 RSpec.describe Hand, type: :model do
+  describe "initialize!" do
+    before do
+      @hand = Hand.new
+    end
+    it 'デフォルトはプリフロップ' do
+      expect(@hand.betting_round).to eq(Hand::BR_PREFLOP)
+    end
+  end
+  describe "betting_round_str!" do
+    before do
+      @hand = Hand.new
+    end
+    it 'ベッティングラウンドを文字列で表す' do
+      @hand.betting_round = Hand::BR_PREFLOP
+      expect(@hand.betting_round_str).to eq('preflop')
+      @hand.betting_round = Hand::BR_FLOP
+      expect(@hand.betting_round_str).to eq('flop')
+      @hand.betting_round = Hand::BR_TURN
+      expect(@hand.betting_round_str).to eq('turn')
+      @hand.betting_round = Hand::BR_RIVER
+      expect(@hand.betting_round_str).to eq('river')
+    end
+  end
   describe "create_hand_users!" do
     before do
       @user_1 = FactoryGirl.create(:user)
@@ -316,6 +339,16 @@ RSpec.describe Hand, type: :model do
         expect(@hand.deck_str).to eq('DQDK')
         expect(@hand.deck.to_s).to eq('DQDK')
       end
+    end
+  end
+  describe 'next_betting_round' do
+    before do
+      @hand = Hand.new
+    end
+    it 'trueを返す' do
+      @hand.betting_round = Hand::BR_PREFLOP
+      @hand.next_betting_round
+      expect(@hand.betting_round).to eq(Hand::BR_FLOP)
     end
   end
 end
