@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe HandUser, type: :model do
   describe 'before_create' do
     before do
-      @user_1 = FactoryGirl.create(:user)
-      @user_2 = FactoryGirl.create(:user)
+      @user_1 = FactoryGirl.create(:user, :chip=>1000)
+      @user_2 = FactoryGirl.create(:user, :chip=>1000)
       @room = Room.find(1)
       @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
     end
@@ -14,6 +14,8 @@ RSpec.describe HandUser, type: :model do
       end
       it "オーダーは1" do
         expect(@hand.hand_users[0].tern_order).to eq(1)
+        expect(@hand.hand_users[0].last_action_chip).to eq(0)
+        expect(@hand.hand_users[0].hand_total_chip).to eq(0)
       end
     end
     context "2人目を追加した場合" do

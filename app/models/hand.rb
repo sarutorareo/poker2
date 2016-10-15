@@ -12,8 +12,10 @@ class Hand < ApplicationRecord
   has_many :hand_users, ->{ order(:tern_order) }, autosave: true
   has_many :users, through: :hand_users, autosave: true
   after_commit { 
-    # ジョブを作成
+    #hand_user一覧更新 ジョブを作成
     HandUsersBroadcastJob.set(wait: WAIT_TIME_HAND_USERS_BROAD_CAST_JOB.second).perform_later self.room_id, self.id
+    #room_user一覧更新 ジョブを作成
+    RoomUsersBroadcastJob.set(wait: WAIT_TIME_ROOM_USERS_BROAD_CAST_JOB.second).perform_later self.room_id
   }
 
   # DB書き込み前に、deck_strをdeckに合わせる
@@ -99,5 +101,12 @@ class Hand < ApplicationRecord
       raise 'betting_round is over'
     end
     self.betting_round += 1
+  end
+
+  def call_chip
+    return 100
+  end
+  def min_raise_chip
+    return 200
   end
 end

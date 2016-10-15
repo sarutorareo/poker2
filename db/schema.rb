@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161015100656) do
+ActiveRecord::Schema.define(version: 20161015134815) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 20161015100656) do
     t.datetime "updated_at",                   null: false
     t.integer  "tern_order",       default: 0, null: false
     t.integer  "last_action_kbn"
-    t.integer  "chip",             default: 0, null: false
+    t.integer  "hand_total_chip",  default: 0, null: false
     t.string   "user_hand_str"
     t.integer  "last_action_chip", default: 0, null: false
     t.index ["hand_id"], name: "index_hand_users_on_hand_id", using: :btree

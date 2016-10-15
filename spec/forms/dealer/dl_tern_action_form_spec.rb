@@ -16,8 +16,8 @@ RSpec.describe DlTernActionForm, type: :form do
   end
   describe 'valid' do
     before do
-      @user_1 = FactoryGirl.create(:user)
-      @user_2 = FactoryGirl.create(:user)
+      @user_1 = FactoryGirl.create(:user, :chip=>1000)
+      @user_2 = FactoryGirl.create(:user, :chip=>1000)
       @room = Room.find(1)
       button_user = @user_1
       @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: @user_1
@@ -25,7 +25,7 @@ RSpec.describe DlTernActionForm, type: :form do
       @data = {}
       @data[:hand_id] = @hand.id
       @data[:user_id] = @user_1.id
-      @data[:tern_action] = TernActionRaise
+      @data[:tern_action] = TernActionRaise.new(100)
     end
     context 'パラメータが空なら' do
       before do
@@ -89,10 +89,28 @@ RSpec.describe DlTernActionForm, type: :form do
         expect(form.valid?).to eq(false)
       end
     end
+    context '手持ちのチップ以上にかける場合' do
+      before do
+        @data[:tern_action] = TernActionCall.new(1001)
+      end
+      it 'valid?=false' do
+        form = DlTernActionForm.new(@data)
+        expect(form.valid?).to eq(true)
+      end
+    end
+    context '手持ちのチップちょうどにかける場合' do
+      before do
+        @data[:tern_action] = TernActionCall.new(1000)
+      end
+      it 'valid?=true' do
+        form = DlTernActionForm.new(@data)
+        expect(form.valid?).to eq(true)
+      end
+    end
   end
   describe 'build_service' do
     before do
-      @user_1 = FactoryGirl.create(:user)
+      @user_1 = FactoryGirl.create(:user, :chip=>1000)
       @hand = Hand.create! room_id: 1, button_user: @user_1, tern_user: @user_1
       @data = {}
     end
@@ -116,6 +134,7 @@ RSpec.describe DlTernActionForm, type: :form do
         form = DlTernActionForm.new(@data)
         srv = form.build_service
         expect(srv).not_to eq(nil)
+        expect(srv.kind_of?(DlTernActionService)).to eq(true)
       end
     end
   end

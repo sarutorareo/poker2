@@ -1,6 +1,4 @@
 class TernActionCallAllIn < TernAction
-  attr_reader :chip
-
   def initialize (chip)
     @chip = chip
   end

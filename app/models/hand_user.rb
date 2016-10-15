@@ -6,7 +6,6 @@ class HandUser < ApplicationRecord
   belongs_to :user
   before_create { 
     _set_order
-    _set_chip
   }
 
   # DB書き込み前に、deck_strをdeckに合わせる
@@ -30,8 +29,5 @@ private
   def _set_order
     max_order = self.hand.get_max_hand_user_order
     self.tern_order = max_order + 1
-  end
-  def _set_chip
-    self.chip = self.user.chip
   end
 end
