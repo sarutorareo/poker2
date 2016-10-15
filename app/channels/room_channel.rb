@@ -59,12 +59,9 @@ class RoomChannel < ApplicationCable::Channel
       Message.create! content: '一周した', room_id: data['room_id'], user_name: 'dealer'
       # 勝者を判定
       action_winner = _judge_action_winner(data)
-      Message.create! content: "action_winner is #{action_winner}", room_id: data['room_id'], user_name: 'dealer'
       if action_winner.blank?
-        p "############# _next_betting_round"
         _next_betting_round(data['room_id'], data['hand_id'])
       else
-        p "############# _send_winner_message"
         _send_winner_message(data['room_id'], action_winner)
       end
     #   srv.apply_pot(action_winners)
@@ -146,10 +143,14 @@ private
     srv.do!()
 
     _send_betting_round(room_id, hand_id)
+    _send_board(room_id, hand_id)
   end
 
   def _send_betting_round(room_id, hand_id)
-    p "################## in _send_betting_round"
     SendBettingRoundJob.perform_later room_id, Hand.find(hand_id).betting_round_str
+  end
+
+  def _send_board(room_id, hand_id)
+    SendBoardJob.perform_later room_id, Hand.find(hand_id).board_str
   end
 end

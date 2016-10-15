@@ -7,6 +7,7 @@ RSpec.describe Hand, type: :model do
     end
     it 'デフォルトはプリフロップ' do
       expect(@hand.betting_round).to eq(Hand::BR_PREFLOP)
+      expect(@hand.board.count).to eq(0)
     end
   end
   describe "betting_round_str!" do
@@ -338,6 +339,30 @@ RSpec.describe Hand, type: :model do
         @hand = Hand.find(@hand.id)
         expect(@hand.deck_str).to eq('DQDK')
         expect(@hand.deck.to_s).to eq('DQDK')
+      end
+    end
+  end
+  describe "boardとboard_str" do
+    context 'new直後' do
+      it '0枚分のカードを持っている' do
+        hand = Hand.new
+        expect(hand.board.count).to eq(0)
+      end
+    end
+    context 'create,カード追加, saveしてからロードした場合' do
+      before do
+        @user_1 = FactoryGirl.create(:user)
+        @room = Room.find(1)
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+      end
+      it 'カードを抜いてからsaveしてロードすると、deckの状態が復元する' do
+        (1..3).each do 
+          @hand.board << @hand.deck.shift
+        end
+        @hand.save!
+        @hand = Hand.find(@hand.id)
+        expect(@hand.board_str).to eq('SAS2S3')
+        expect(@hand.board.to_s).to eq('SAS2S3')
       end
     end
   end

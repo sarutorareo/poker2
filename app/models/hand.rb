@@ -4,7 +4,7 @@ class Hand < ApplicationRecord
   BR_TURN = 2
   BR_RIVER = 3
 
-  attr_reader :deck
+  attr_reader :deck, :board
 
   belongs_to :button_user, class_name: "User", foreign_key: "button_user_id"
   belongs_to :tern_user, class_name: "User", foreign_key: "tern_user_id"
@@ -19,11 +19,13 @@ class Hand < ApplicationRecord
   # DB書き込み前に、deck_strをdeckに合わせる
   before_validation {
     self.deck_str = deck.to_s
+    self.board_str = board.to_s
   }
 
   # DB読み込み後に、deckをdeck_strに合わせる
   after_initialize {
     @deck = Deck.new_from_str(self.deck_str)
+    @board = CardList.new_from_str(self.board_str)
   }
 
   def create_hand_users!( user_ids )

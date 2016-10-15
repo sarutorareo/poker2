@@ -1,7 +1,6 @@
 class RoomsController < ApplicationController
   def show
     p "####### 入室2"
-    binding.pry
     _prepare_render_show(params)
   end
 

@@ -38,5 +38,39 @@ RSpec.describe DlStartHandService, type: :service do
         end
       end
     end
+    context 'flopになったら' do
+      before do
+        @hand.betting_round = Hand::BR_PREFLOP
+        @hand.save!
+      end
+      it 'boardに３枚のカードを開く' do
+        deck_num = @hand.deck.count
+        @ds.do!
+        @hand = Hand.find(@hand.id)
+        expect(@hand.betting_round).to eq(Hand::BR_FLOP)
+        expect(@hand.board.count).to eq(3)
+        expect(@hand.deck.count).to eq(deck_num - 3)
+      end
+    end
+    context 'flop, turnになったら' do
+      before do
+        @hand.betting_round = Hand::BR_PREFLOP
+        @hand.save!
+      end
+      it 'boardに３枚, 1枚のカードを開く' do
+        deck_num = @hand.deck.count
+        @ds.do!
+        @hand = Hand.find(@hand.id)
+        expect(@hand.betting_round).to eq(Hand::BR_FLOP)
+        expect(@hand.board.count).to eq(3)
+        expect(@hand.deck.count).to eq(deck_num - 3)
+
+        @ds.do!
+        @hand = Hand.find(@hand.id)
+        expect(@hand.betting_round).to eq(Hand::BR_TURN)
+        expect(@hand.board.count).to eq(4)
+        expect(@hand.deck.count).to eq(deck_num - 4)
+      end
+    end
   end
 end
