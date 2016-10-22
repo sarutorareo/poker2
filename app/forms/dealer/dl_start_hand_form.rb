@@ -1,20 +1,12 @@
-class DlStartHandForm
+class DlStartHandForm < DlHandFormBase
   include ActiveModel::Model
 
-  attr_reader :hand_id
-
-  # hand_id は必須
-  validates :hand_id, presence: true
-
   def initialize (data)
-    @hand_id = data[:hand_id]
+    super(data)
   end
 
   def build_service 
-    if self.invalid?
-      raise ArgumentError, "DlStartHandFormの引数が不正 error=#{self.errors}"
-    end
-
+    check_valid_and_raise
     DlStartHandService.new(@hand_id)
   end
 end

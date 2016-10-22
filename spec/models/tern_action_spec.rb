@@ -33,5 +33,11 @@ RSpec.describe TernAction, type: :model do
       expect(action.chip).to eq(100)
     end
   end
+  describe 'active' do
+    it 'baseはtrue' do
+      action = TernAction.new
+      expect(action.active?).to eq(true)
+    end
+  end
 end
 

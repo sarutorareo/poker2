@@ -76,4 +76,29 @@ RSpec.describe Card, type: :model do
       expect(Card::to_no("A")).to eq(1)
     end
   end
+  describe 'val' do
+    before do
+      @card_ca = Card.new_from_str("CA")
+      @card_ck = Card.new_from_str("CK")
+    end
+    it 'Aは14' do
+      expect(@card_ca.val).to eq(14)
+    end
+    it 'Kは13' do
+      expect(@card_ck.val).to eq(13)
+    end
+  end
+  describe 'comp_val' do
+    before do
+      @card_ca = Card.new_from_str("CA")
+      @card_ck = Card.new_from_str("CK")
+      @card_sk = Card.new_from_str("SK")
+      @card_s2 = Card.new_from_str("S2")
+    end
+    it 'A > K' do
+      expect(@card_ca.bigger_than?(@card_ck)).to eq(true)
+      expect(@card_ca.smaller_than?(@card_ck)).to eq(false)
+    end
+
+  end
 end

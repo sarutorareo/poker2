@@ -33,4 +33,7 @@ class TernAction
       raise 'invalid tern_action_kbn'
     end
   end
+  def active?
+    return true
+  end
 end

@@ -1,5 +1,9 @@
 # Be sure to restart your server when you modify this file. Action Cable runs in a loop that does not support auto reloading.
 class RoomChannel < ApplicationCable::Channel
+  SETTLEMENT_NONE = 0
+  SETTLEMENT_ACTION = 1
+  SETTLEMENT_HAND = 2
+
   def subscribed
     p "############### subscribed"
     room = Room.find(params[:room_id])
@@ -57,12 +61,18 @@ class RoomChannel < ApplicationCable::Channel
     if Hand.find(data['hand_id']).rotated_all?
       Message.create! content: '一周した', room_id: data['room_id'], user_name: 'dealer'
       # 勝者を判定
-      action_winner = _judge_action_winner(data)
-      if action_winner.blank?
+      settlement, winners = _judge_winners(data)
+      if settlement = SETTLEMENT_HAND then
+        # TODO
+        # _showdown
+      end
+      if winners.blank?
+        p "###############_next_betting_round"
         _next_betting_round(data['room_id'], data['hand_id'])
       else
-        _send_winner_message(data['room_id'], action_winner)
+        _send_winner_message(data['room_id'], winners)
       end
+
     #   srv.apply_pot(action_winners)
     end
   end
@@ -90,6 +100,22 @@ private
     srv.do!()
   end
 
+  # アクションまたはハンドによる勝者を判定する
+  def _judge_winners(data)
+    action_winner = _judge_action_winner(data)
+    unless action_winner.blank?
+      return SETTLEMENT_ACTION, action_winner
+    end
+
+    hand = Hand.find(data['hand_id'])
+    if hand.betting_round != Hand::BR_RIVER
+      return SETTLEMENT_NONE, nil
+    end
+
+    # showdown
+    return SETTLEMENT_HAND, _judge_user_hand_winner(data)
+  end
+
   # アクションによって決まる勝者(全員foldさせた人)を判定する
   def _judge_action_winner(data)
     p "############# in _judge_action_winner"
@@ -101,6 +127,19 @@ private
 
     p "############# after srv.do!"
     return srv.winner_user_id
+  end
+
+  # アクションによって決まる勝者(全員foldさせた人)を判定する
+  def _judge_user_hand_winner(data)
+    p "############# in _judge_user_hand_winner"
+    df = DlJudgeUserHandWinnerForm.new({
+        :hand_id => data['hand_id']
+      })
+    srv = df.build_service
+    srv.do!()
+
+    p "############# after srv.do!"
+    return srv.winner_user_ids
   end
 
   # 新たなハンドを作成する

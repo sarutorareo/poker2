@@ -8,13 +8,17 @@ class Card
 
   SUITS = [ST_SPADE, ST_HEART, ST_CLUB, ST_DIA]
 
-  attr_reader :suit, :no
+  attr_reader :suit, :no, :val
 
   def initialize(suit_, no_)
     _check_range_suit(suit_)
     _check_range_no(no_)
     @suit = suit_
     @no = no_
+  end
+
+  def val
+    return no == 1 ? 14 : no
   end
 
   def self.new_from_str(str)

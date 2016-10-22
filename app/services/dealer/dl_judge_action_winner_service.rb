@@ -1,8 +1,8 @@
-class DlJudgeActionWinnerService
+class DlJudgeActionWinnerService < DlHandServiceBase
   attr_accessor :winner_user_id
   
   def initialize(hand_id)
-    @hand_id = hand_id
+    super(hand_id)
     self.winner_user_id = nil
   end
 

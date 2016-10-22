@@ -5,4 +5,7 @@ class TernActionFold < TernAction
   def kbn_str
     return 'fold'
   end
+  def active?
+    return false
+  end
 end

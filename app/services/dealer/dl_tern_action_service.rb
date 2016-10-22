@@ -1,6 +1,6 @@
-class DlTernActionService
+class DlTernActionService < DlHandServiceBase
   def initialize(hand_id, user_id, tern_action)
-    @hand_id = hand_id
+    super(hand_id)
     @user_id = user_id
     @tern_action = tern_action
   end

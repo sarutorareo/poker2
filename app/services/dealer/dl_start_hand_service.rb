@@ -1,7 +1,7 @@
-class DlStartHandService
+class DlStartHandService < DlHandServiceBase
   
   def initialize(hand_id)
-    @hand_id = hand_id
+    super(hand_id)
   end
 
   def do!()

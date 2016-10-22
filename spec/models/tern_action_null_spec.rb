@@ -8,5 +8,7 @@ RSpec.describe TernActionNull, type: :model do
     expect(@tern_action_fold.kbn).to eq(TernAction::ACT_KBN_NULL)
     expect(@tern_action_fold.kbn_str).to eq('-')
   end
+  it 'active?はtrueを返す' do
+    expect(@tern_action_fold.active?).to eq(true)
+  end
 end
-

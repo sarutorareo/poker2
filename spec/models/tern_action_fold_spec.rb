@@ -9,5 +9,8 @@ RSpec.describe TernActionFold, type: :model do
     expect(@tern_action_fold.kbn_str).to eq('fold')
     expect(@tern_action_fold.chip).to eq(0)
   end
+  it 'activeはfalseを返す' do
+    expect(@tern_action_fold.active?).to eq(false)
+  end
 end
 

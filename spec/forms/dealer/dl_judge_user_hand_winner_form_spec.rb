@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe DlJudgeActionWinnerForm, type: :form do
+RSpec.describe DlJudgeUserHandWinnerForm, type: :form do
   describe 'recieve' do
     it 'パラメータを受け取る' do
       data = {}
       data[:hand_id] = 3
-      form = DlJudgeActionWinnerForm.new(data)
+      form = DlJudgeUserHandWinnerForm.new(data)
       expect(form.hand_id).to eq(3)
     end
   end
@@ -20,7 +20,7 @@ RSpec.describe DlJudgeActionWinnerForm, type: :form do
         @data = {}
       end
       it 'valid?=false' do
-        form = DlJudgeActionWinnerForm.new(@data)
+        form = DlJudgeUserHandWinnerForm.new(@data)
         expect(form.valid?).to eq(false)
       end
     end
@@ -30,7 +30,7 @@ RSpec.describe DlJudgeActionWinnerForm, type: :form do
         @data[:hand_id] = '1'
       end
       it 'valid?=true' do
-        form = DlJudgeActionWinnerForm.new(@data)
+        form = DlJudgeUserHandWinnerForm.new(@data)
         expect(form.valid?).to eq(true)
       end
     end
@@ -43,7 +43,7 @@ RSpec.describe DlJudgeActionWinnerForm, type: :form do
       before do
       end
       it '例外が発生する' do
-        form = DlJudgeActionWinnerForm.new(@data)
+        form = DlJudgeUserHandWinnerForm.new(@data)
         expect do
           form.build_service
         end.to raise_error(ArgumentError)
@@ -51,12 +51,16 @@ RSpec.describe DlJudgeActionWinnerForm, type: :form do
     end
     context 'formに渡すパラメータが正しい時' do
       before do
-        @data[:hand_id] = 3
+        @user_1 = FactoryGirl.create(:user)
+        @room = Room.find(1)
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+        @hand.save!
+        @data[:hand_id] = @hand.id
       end
       it 'サービスが作られる' do
-        form = DlJudgeActionWinnerForm.new(@data)
+        form = DlJudgeUserHandWinnerForm.new(@data)
         srv = form.build_service
-        expect(srv).not_to eq(nil)
+        expect(srv.kind_of?(DlJudgeUserHandWinnerService)).to eq(true)
       end
     end
   end
