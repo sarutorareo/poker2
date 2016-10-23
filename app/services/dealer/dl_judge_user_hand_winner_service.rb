@@ -9,8 +9,6 @@ class DlJudgeUserHandWinnerService
   def do!()
     max_hand_users = []
     @hand_users.each do |hu|
-      p "##############################"
-      p hu
       # 一人目なら
       if (max_hand_users.blank?) 
         max_hand_users << hu
@@ -24,8 +22,6 @@ class DlJudgeUserHandWinnerService
       end
     end
 
-    p "##############################"
-    p max_hand_users
     self.winner_user_ids = max_hand_users.map{|hu| hu.user_id}
   end
 end

@@ -31,7 +31,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
       it 'srv.winnerにuser_1のidが入る' do
         @ds.do!
         expect(@ds.winner_user_ids.count).to eq(1)
-        expect(@ds.winner_user_ids.count[0]).to eq(@user_1.id)
+        expect(@ds.winner_user_ids[0]).to eq(@user_1.id)
       end
     end
     context 'user_1:52, user_2:35なら' do
@@ -75,6 +75,50 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
         expect(@ds.winner_user_ids.count).to eq(2)
         expect(@ds.winner_user_ids[0]).to eq(@user_1.id)
         expect(@ds.winner_user_ids[1]).to eq(@user_2.id)
+      end
+    end
+    context 'user_1:78, user_2:93なら' do
+      before do
+        @hand.hand_users.each do |hu|
+          if (hu.user_id == @user_1.id)
+            hu.user_hand << Card.new_from_str("C7")
+            hu.user_hand << Card.new_from_str("H8")
+          else
+            hu.user_hand << Card.new_from_str("H9")
+            hu.user_hand << Card.new_from_str("C3")
+          end
+          hu.save!
+        end
+        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id})
+        @ds = df.build_service
+      end
+      it 'srv.winnerにuser_2のidが入る' do
+        @ds.do!
+        p @ds.winner_user_ids
+        expect(@ds.winner_user_ids.count).to eq(1)
+        expect(@ds.winner_user_ids[0]).to eq(@user_2.id)
+      end
+    end
+    context 'user_1:93, user_2:78なら' do
+      before do
+        @hand.hand_users.each do |hu|
+          if (hu.user_id == @user_1.id)
+            hu.user_hand << Card.new_from_str("H9")
+            hu.user_hand << Card.new_from_str("C3")
+          else
+            hu.user_hand << Card.new_from_str("C7")
+            hu.user_hand << Card.new_from_str("H8")
+          end
+          hu.save!
+        end
+        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id})
+        @ds = df.build_service
+      end
+      it 'srv.winnerにuser_2のidが入る' do
+        @ds.do!
+        p @ds.winner_user_ids
+        expect(@ds.winner_user_ids.count).to eq(1)
+        expect(@ds.winner_user_ids[0]).to eq(@user_1.id)
       end
     end
   end

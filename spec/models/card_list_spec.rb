@@ -135,6 +135,18 @@ RSpec.describe CardList, type: :model do
         expect(@card_list_2.hicard_than?(@card_list_1)).to eq(true)
       end
     end
+    context '78 と 93' do
+      before do
+        @card_list_1 << Card.new(Card::ST_HEART, 7)
+        @card_list_1 << Card.new(Card::ST_HEART, 8)
+        @card_list_2 << Card.new(Card::ST_HEART, 9)
+        @card_list_2 << Card.new(Card::ST_HEART, 3)
+      end
+      it ' 93(user_2)が勝つ ' do
+        expect(@card_list_1.hicard_than?(@card_list_2)).to eq(false)
+        expect(@card_list_2.hicard_than?(@card_list_1)).to eq(true)
+      end
+    end
     context '同じ数字' do
       before do
         @card_list_1 << Card.new(Card::ST_HEART, 3)

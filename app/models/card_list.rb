@@ -22,6 +22,7 @@ class CardList < Array
     sorted_other = other.sort_val
     (0..[sorted_self.count, sorted_other.count].min-1).each do |index|
       return true if sorted_self[index].val > sorted_other[index].val
+      return false if sorted_self[index].val < sorted_other[index].val
     end
     return true if sorted_self.count > sorted_other.count
     return false
