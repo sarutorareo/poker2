@@ -4,7 +4,7 @@ class HandUserChannel < ApplicationCable::Channel
     p "############### subscribed hand_user_channel"
     room = Room.find(params[:room_id])
     user = User.find(params[:user_id])
-    stream_from "room_channel_#{params[:room_id]}_#{params[:user_id]}"
+    stream_from "hand_user_channel_#{params[:room_id]}_#{params[:user_id]}"
   end
 
   def unsubscribed

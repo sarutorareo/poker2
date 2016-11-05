@@ -4,7 +4,7 @@ class HandUsersBroadcastJob < ApplicationJob
 
   def perform(room_id, hand_id)
     p "###### in HandUsersBroadcastJob perform room_id=#{room_id} hand_id=#{hand_id}"
-    ActionCable.server.broadcast "room_channel_#{room_id}", {type: "msg_hand_users", DOM_hand_user_list: render_user_list(hand_id)}
+    ActionCable.server.broadcast "poker_channel_#{room_id}", {type: "msg_hand_users", DOM_hand_user_list: render_user_list(hand_id)}
   end
 
   private
