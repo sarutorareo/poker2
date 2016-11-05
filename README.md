@@ -24,3 +24,8 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+* 【注意】
+テスト実行のためには、test_connection.rb他、いくつかのstubが必要です。
+それらのstubは、https://github.com/rails/rails 以下、actioncable/test/stubsよりコピーして利用しています
+

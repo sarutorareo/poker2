@@ -40,3 +40,6 @@ tmux-*.log
 
 # precompileされたassetsは上げない
 public/assets/*
+
+# test/stubs以下は上げない(railsプロジェクトから拾ってくる)
+test/stubs/*

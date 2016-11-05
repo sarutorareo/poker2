@@ -5,6 +5,8 @@ class RoomChannel < ApplicationCable::Channel
   SETTLEMENT_HAND = 2
 
   def subscribed
+    return if params[:room_id].blank?
+
     p "############### subscribed"
     room = Room.find(params[:room_id])
     user = User.find(params[:user_id]) unless params[:user_id].blank?
@@ -57,27 +59,57 @@ class RoomChannel < ApplicationCable::Channel
     # ユーザーのアクションを処理する
     _accept_user_action(data)
 
-    # 一周したか判定
-    if Hand.find(data['hand_id']).rotated_all?
-      Message.create! content: '一周した', room_id: data['room_id'], user_name: 'dealer'
-      # 勝者を判定
-      settlement, winners = _judge_winners(data)
+    # 勝者を判定
+    if judge_winners(data)
+      return
+    end
+
+    # 1周したら次のベッティングラウンドへ
+    if is_rounded_all?(data['hand_id'])
+      # 次のベッティングラウンドへ
+      p "###############_next_betting_round"
+      _next_betting_round(data['room_id'], data['hand_id'])
+    end
+
+    # ロボだったら促す
+    #TODO
+  end
+
+  def judge_winners(data)
+    # 一周してなければ何もしない
+    if !is_rounded_all?(data['hand_id'])
+      return false
+    end
+
+    # 勝者を判定
+    settlement, winners = _judge_winners(data)
+    # 勝者決まったら
+    if winners.present?
+      # ハンドで決まったらショウダウン
       if settlement = SETTLEMENT_HAND then
         # TODO
         # _showdown
       end
-      if winners.blank?
-        p "###############_next_betting_round"
-        _next_betting_round(data['room_id'], data['hand_id'])
-      else
-        _send_winner_message(data['room_id'], winners)
-      end
-
-    #   srv.apply_pot(action_winners)
+      # 勝者を伝える
+      _send_winner_message(data['room_id'], winners)
+      # TODO
+      # srv.apply_pot(action_winners)
+      return true
     end
   end
 
+  def is_rounded_all?(hand_id)
+    hand = get_hand(hand_id)
+    return false if hand.blank?
+    return hand.rotated_all?
+  end
+
+  def get_hand(hand_id)
+    return Hand.find_by_id(hand_id)
+  end
+
 private
+
   def _dbg_last_action_list(h)
     p '############# in _dbg_last_action_list'
     result = ''
