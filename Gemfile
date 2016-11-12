@@ -76,3 +76,7 @@ group :development, :test do
   gem 'pry-byebug' # デバッグを実施(Ruby 2.0以降で動作する)
   gem 'pry-stack_explorer' # スタックをたどれる
 end
+
+group :development, :test do
+  gem 'color_echo', '~> 2.0', '>= 2.0.1' # コンソール出力に色を付ける
+end

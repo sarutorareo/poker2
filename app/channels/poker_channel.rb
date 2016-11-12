@@ -47,8 +47,22 @@ class PokerChannel < ApplicationCable::Channel
       _next_betting_round(data['room_id'], data['hand_id'])
     end
 
-    # ロボだったら促す
-    #TODO
+    # 次のユーザーにアクションを促す
+    prompt_tern_action_to_next_user(data['room_id'], data)
+  end
+
+  def prompt_tern_action_to_next_user(room_id, data)
+    user = get_next_tern_user(data['hand_id'])
+    PrU.cp "##### before PromptTernActionJob.perform_later"
+    if user.is_cpu?
+      ta = user.tern_action
+      data['user_id'] = user.id
+      data['action_kbn'] = ta.kbn
+      data['chip'] = ta.chip
+      tern_action(data)
+    else
+      PromptTernActionJob.perform_later room_id, user
+    end
   end
 
   def judge_winners(data)
@@ -82,6 +96,12 @@ class PokerChannel < ApplicationCable::Channel
 
   def get_hand(hand_id)
     return Hand.find_by_id(hand_id)
+  end
+
+  def get_next_tern_user(hand_id)
+    hand = get_hand(hand_id)
+    return nil if hand.blank?
+    return hand.tern_user
   end
 
 private

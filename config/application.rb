@@ -22,8 +22,11 @@ module Poker2
     config.autoload_paths += %W(#{config.root}/app/services/dealer)
     config.autoload_paths += %W(#{config.root}/app/forms)
     config.autoload_paths += %W(#{config.root}/app/forms/dealer)
+    config.autoload_paths += %W(#{config.root}/app/forms)
 
-    # utilをオートロードする
+    # アプリによらないutilをオートロードする
+    config.autoload_paths += %W(#{config.root}/lib/utils)
+    # このアプリ特有のutilをオートロードする
     config.autoload_paths += %W(#{config.root}/app/utils)
   end
 end
