@@ -19,13 +19,7 @@ class PokerChannel < ApplicationCable::Channel
   def start_hand(data)
     p "############### start_hand"
     # 新たなハンドを作成する
-    hand = _create_new_hand(data)
-
-    # 新たなハンドを開始する
-    _start_hand(data['room_id'], hand.id)
-
-    # betting_roundを表示する
-    _send_betting_round(data['room_id'], hand.id)
+    hand = Game.start_hand(params[:room_id])
   end
 
   def tern_action(data)
@@ -168,32 +162,6 @@ private
 
     p "############# after srv.do!"
     return srv.winner_user_ids
-  end
-
-  # 新たなハンドを作成する
-  def _create_new_hand(data)
-    button_user = User.find(data['user_id']) unless data['user_id'].blank?
-    room = Room.find(params[:room_id])
-    hand = Hand.create! room_id: data['room_id'], button_user: button_user, tern_user: button_user
-    hand.start_hand!(room.get_room_user_ids)
-    hand.save!
-    return hand
-  end
-
-  # 新たなハンドを開始する
-  def _start_hand(room_id, hand_id)
-    # カードを配る
-    df = DlStartHandForm.new({
-        :hand_id => hand_id
-      })
-    srv = df.build_service
-    srv.do!()
-
-    # 配ったカードをクライアント毎に送る
-    hand = Hand.find(hand_id)
-    hand.hand_users.each do |hu|
-      DealCardsJob.perform_later room_id, hu.user.id, hu.user_hand.to_disp_s
-    end
   end
 
   def _send_winner_message(room_id, action_winner)
