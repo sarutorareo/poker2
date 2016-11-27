@@ -6,6 +6,9 @@ module Game
   def self.start_hand(room_id)
     # 引数の検証
     raise ArgumentError.new "room_user is blank" if Room.find(room_id).room_users.blank?
+    add_cpu_user=true
+    _add_cpu_user_to_room(room_id) if add_cpu_user
+
     user_id = Room.find(room_id).room_users[0].user_id
 
     # 新たなハンドを作成する
@@ -114,7 +117,7 @@ private
     button_user = User.find(user_id) 
     room = Room.find(room_id)
     hand = Hand.create! room_id: room.id, button_user: button_user, tern_user: button_user
-    hand.start_hand!(room.get_room_user_ids)
+    hand.start_hand!(room.get_room_user_ids_sort_user_type)
     hand.save!
     return hand
   end
@@ -215,6 +218,17 @@ private
 
   def self._send_board(room_id, hand_id)
     SendBoardJob.perform_later room_id, Hand.find(hand_id).board.to_disp_s
+  end
+
+  def self._add_cpu_user_to_room(room_id)
+    room = Room.find_by_id(room_id)
+    User.where(:user_type=>User::UT_CPU).order(:id).each do |cpu| 
+      room.users.delete(cpu)
+    end
+    User.where(:user_type=>User::UT_CPU).order(:id).each do |cpu| 
+      room.users << cpu
+      break
+    end
   end
 
 end

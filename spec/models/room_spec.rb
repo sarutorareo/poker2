@@ -22,7 +22,7 @@ RSpec.describe Room, type: :model do
       expect(@user.rooms.count).to eq(1)
     end
   end
-  describe "get_users_id ルームユーザーのid配列を取得する" do
+  describe "get_room_user_ids ルームユーザーのid配列を取得する" do
     before do
       @user1 = FactoryGirl.create(:user)
       @user2 = FactoryGirl.create(:user)
@@ -45,6 +45,33 @@ RSpec.describe Room, type: :model do
         expect(ar.count).to eq(0)
       end
     end
-
+  end
+  describe "get_room_user_ids_sort_user_type ルームユーザーのid配列を取得する。CPUユーザーは、人間ユーザーよりも後に返される" do
+    before do
+      @cpu_user = FactoryGirl.create(:user, :name=>'cpu_user', :user_type=>User::UT_CPU)
+      @user1 = FactoryGirl.create(:user)
+      @user2 = FactoryGirl.create(:user)
+      @room = Room.find(1)
+    end
+    context "CPUの方が先にルームに入った場合" do
+      before do
+        @room.users << @cpu_user
+        @room.users << @user2
+        @room.users << @user1
+      end
+      it "人間の方が先に並べられる" do
+        ar = @room.get_room_user_ids_sort_user_type
+        expect(ar.count).to eq(3)
+        expect(ar[0]).to eq(@user1.id)
+        expect(ar[1]).to eq(@user2.id)
+        expect(ar[2]).to eq(@cpu_user.id)
+      end
+    end
+    context "ユーザーが一人もいない場合" do
+      it "長さ0の配列が返される" do
+        ar = @room.get_room_user_ids
+        expect(ar.count).to eq(0)
+      end
+    end
   end
 end

@@ -6,7 +6,7 @@ class RoomsController < ApplicationController
 
   def index
     @rooms = Room.all
-    @users = User.all
+    @users = User.where(:user_type=>User::UT_HUMAN)
   end
 
   private
