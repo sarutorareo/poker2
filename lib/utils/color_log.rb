@@ -1,6 +1,6 @@
-#PrintUtil
-module PrU
-  def self.cp (obj)
+#ColorLog
+module ColorLog
+  def self.clog (obj)
     CE.once.ch :white, :blue
     if Rails.env == "test"
       p obj
