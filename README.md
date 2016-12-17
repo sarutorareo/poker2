@@ -1,5 +1,8 @@
 # README
 
+テスト
+テスト２
+
 https://hiyopoker.herokuapp.com/ | https://git.heroku.com/hiyopoker.git
 
 This README would normally document whatever steps are necessary to get the
