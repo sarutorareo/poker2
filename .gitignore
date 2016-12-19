@@ -29,6 +29,8 @@ database.yml.org
 
 # vimのバックアップは除く
 *~
+# vimの.swpは除く
+*.swp
 
 # Gemfileなどのバックアップは除く
 Gemfile.org.*
