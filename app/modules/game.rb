@@ -9,12 +9,9 @@ module Game
     add_cpu_user=true
     _add_cpu_user_to_room(room_id) if add_cpu_user
 
-    user_id = Room.find(room_id).room_users[0].user_id
-
     # 新たなハンドを作成する
     hand = _create_new_hand({
-      room_id: room_id,
-      user_id: user_id
+      room_id: room_id
     })
 
     # 新たなハンドを開始する
@@ -112,12 +109,14 @@ private
 
   def self._create_new_hand(data)
     room_id = data[:room_id]
-    user_id = data[:user_id]
-
-    button_user = User.find(user_id) 
     room = Room.find(room_id)
+
+    user_ids = room.make_room_users_with_user_type_array.map{|u| u.user_id}
+    rais 'no room_user' if user_ids.blank?
+
+    button_user = User.find(user_ids[0])
     hand = Hand.create! room_id: room.id, button_user: button_user, tern_user: button_user
-    hand.start_hand!(room.get_room_user_ids_sort_user_type)
+    hand.start_hand!(user_ids)
     hand.save!
     return hand
   end

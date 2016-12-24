@@ -31,6 +31,36 @@ RSpec.describe RoomUser, type: :model do
       end
     end
   end
+  describe "usersとroom_usersのソート順をuser_type, 入室した順にする" do
+    before do
+      @user1 = FactoryGirl.create(:user)
+      @user2 = FactoryGirl.create(:user)
+      @cpu_user = FactoryGirl.create(:user, :user_type=>1)
+      @room = Room.find(1)
+    end
+    context "cpuユーザーがいない場合" do
+      context "1, 2 の順に入室" do
+        before do
+          @room.users << @user1
+          @room.users << @user2
+        end
+        it "入室した順に並ぶ" do
+          expect(@room.room_users[0].user_id).to eq(@user1.id)
+          expect(@room.room_users[1].user_id).to eq(@user2.id)
+        end
+      end
+      context "2, 1 の順に入室" do
+        before do
+          @room.users << @user2
+          @room.users << @user1
+        end
+        it "入室した順に並ぶ" do
+          expect(@room.room_users[0].user_id).to eq(@user2.id)
+          expect(@room.room_users[1].user_id).to eq(@user1.id)
+        end
+      end
+    end
+  end
   describe "保存したらエンキュー" do
     before do
       @user1 = FactoryGirl.create(:user)

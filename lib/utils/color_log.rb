@@ -1,7 +1,7 @@
 #ColorLog
 module ColorLog
   def self.clog (obj)
-    CE.once.ch :white, :blue
+    CE.once.ch :black, :blue
     if Rails.env == "test"
       p obj
     end
