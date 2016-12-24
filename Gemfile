@@ -77,6 +77,6 @@ group :development, :test do
   gem 'pry-stack_explorer' # スタックをたどれる
 end
 
-group :development, :test do
+group :production,:development, :test do
   gem 'color_echo', '~> 2.0', '>= 2.0.1' # コンソール出力に色を付ける
 end
