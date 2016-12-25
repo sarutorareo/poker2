@@ -1,5 +1,4 @@
-#require '../../lib/utils/color_log.rb'
-require 'color_log'
+#require 'color_log'
 
 WAIT_TIME_HAND_USERS_BROAD_CAST_JOB = 0
 class HandUsersBroadcastJob < ApplicationJob
