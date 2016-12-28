@@ -37,8 +37,6 @@ class Card
     result = ""
     result += _get_suit_disp_str
     result += _get_no_str
-    ColorLog.clog "############### in to_disp_s ########"
-    ColorLog.clog result
     return result
   end
 

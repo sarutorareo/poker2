@@ -46,6 +46,9 @@ $(document).on 'click', '#call_button', (event) ->
   App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_CALL, 100
   event.preventDefault()
 
+$(document).on 'click', '#raise_button', (event) ->
+  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_RAISE, Number($('#raise_amount').val())
+  event.preventDefault()
 
 do_on_document_readay = ->
   console.log 'in do_on_document_readay poker_channel'

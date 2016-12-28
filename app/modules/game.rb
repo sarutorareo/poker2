@@ -24,43 +24,56 @@ module Game
   end
 
   # ユーザーのアクションを処理する
-  def self.tern_action(data)
+  def self.tern_action(param)
+    room_id = param.fetch('room_id', nil)
+    hand_id = param.fetch('hand_id', nil)
+    user_id = param.fetch('user_id', nil)
+    action_kbn = param.fetch('action_kbn', nil)
+    chip = param.fetch('chip', 0)
+
     # ユーザーのアクションを処理する
-    _accept_user_action(data)
+    ta = _accept_user_action({
+           'hand_id' => hand_id,
+           'user_id' => user_id,
+           'action_kbn' => action_kbn,
+           'chip' => chip
+         })
+    # raiseが入ったらfold, all_in 以外は再アクション
+    # if ta.is_raise?
+      ;
+    # end
 
     # 勝者を判定
-    if judge_winners(data)
-      return
-    end
+    return if judge_winners(room_id, hand_id)
 
     # 1周したら次のベッティングラウンドへ
-    if is_rounded_all?(data['hand_id'])
+    if is_rounded_all?(hand_id)
       # 次のベッティングラウンドへ
       p "###############_next_betting_round"
-      _next_betting_round(data['room_id'], data['hand_id'])
+      _next_betting_round(room_id, hand_id)
     end
 
     # 次のユーザーにアクションを促す
-    prompt_tern_action_to_next_user(data['room_id'], data)
+    prompt_tern_action_to_next_user(room_id, hand_id)
   end
 
-  def self.judge_winners(data)
+  def self.judge_winners(room_id, hand_id)
     # 一周してなければ何もしない
-    if !is_rounded_all?(data['hand_id'])
+    unless is_rounded_all?(hand_id)
       return false
     end
 
     # 勝者を判定
-    settlement, winners = _judge_winners(data)
+    settlement, winners = _judge_winners(hand_id)
     # 勝者決まったら
     if winners.present?
       # ハンドで決まったらショウダウン
-      if settlement = SETTLEMENT_HAND then
+      if settlement == SETTLEMENT_HAND then
         # TODO
         # _showdown
       end
       # 勝者を伝える
-      _send_winner_message(data['room_id'], winners)
+      _send_winner_message(room_id, winners)
       # TODO
       # srv.apply_pot(action_winners)
       return true
@@ -73,13 +86,17 @@ module Game
     return hand.rotated_all?
   end
 
-  def self.prompt_tern_action_to_next_user(room_id, data)
-    user = get_next_tern_user(data['hand_id'])
+  def self.prompt_tern_action_to_next_user(room_id, hand_id)
+    user = get_next_tern_user(hand_id)
     if user.is_cpu?
       ta = user.tern_action
+      data = {}
+      data['room_id'] = room_id
+      data['hand_id'] = hand_id
       data['user_id'] = user.id
       data['action_kbn'] = ta.kbn
       data['chip'] = ta.chip
+
       tern_action(data)
     else
       PromptTernActionJob.perform_later room_id, user
@@ -142,31 +159,40 @@ private
   end
 
   # ユーザーのアクションを処理する
-  def self._accept_user_action(data)
-    p "############## before create DLTernActionForm"
+  def self._accept_user_action(param)
+    data = {}
+    data['action_kbn'] = param.fetch('action_kbn', nil)
+    data['chip'] = param.fetch('chip', 0)
+    data['hand_id'] = param.fetch('hand_id', nil)
+    data['user_id'] = param.fetch('user_id', nil)
+
+    ColorLog.clog "############## _accept_user_action"
+    ColorLog.clog data
+    ta = TernAction.new_from_kbn_and_chip(data['action_kbn'], data['chip'])
     df = DlTernActionForm.new( {
         :hand_id => data['hand_id'],
         :user_id => data['user_id'],
-        :tern_action => TernAction.new_from_kbn_and_chip(data['action_kbn'], data['chip'])
+        :tern_action => ta
       })
     srv = df.build_service
     srv.do!()
+    return ta
   end
   
   # アクションまたはハンドによる勝者を判定する
-  def self._judge_winners(data)
-    action_winner = _judge_action_winner(data)
+  def self._judge_winners(hand_id)
+    action_winner = _judge_action_winner(hand_id)
     unless action_winner.blank?
       return SETTLEMENT_ACTION, action_winner
     end
 
-    hand = Hand.find(data['hand_id'])
+    hand = Hand.find(hand_id)
     if hand.betting_round != Hand::BR_RIVER
       return SETTLEMENT_NONE, nil
     end
 
     # showdown
-    return SETTLEMENT_HAND, _judge_user_hand_winner(data)
+    return SETTLEMENT_HAND, _judge_user_hand_winner(hand_id)
   end
 
   def self._send_winner_message(room_id, action_winner)
@@ -186,10 +212,10 @@ private
   end
 
   # アクションによって決まる勝者(全員foldさせた人)を判定する
-  def self._judge_action_winner(data)
+  def self._judge_action_winner(hand_id)
     p "############# in _judge_action_winner"
     df = DlJudgeActionWinnerForm.new({
-        :hand_id => data['hand_id']
+        :hand_id => hand_id
       })
     srv = df.build_service
     srv.do!()
@@ -199,10 +225,10 @@ private
   end
 
   # アクションによって決まる勝者(全員foldさせた人)を判定する
-  def self._judge_user_hand_winner(data)
+  def self._judge_user_hand_winner(hand_id)
     p "############# in _judge_user_hand_winner"
     df = DlJudgeUserHandWinnerForm.new({
-        :hand_id => data['hand_id']
+        :hand_id => hand_id
       })
     srv = df.build_service
     srv.do!()

@@ -85,6 +85,26 @@ RSpec.describe Game, type: :module do
       end
     end
   end
+  describe 'tern_action' do
+    before do
+      @user = User.new()
+      @hand_mock = double('hand_mock')
+      @data = {}
+    end
+    context 'raiseの場合' do
+      context '誰もアクションしていない場合' do
+        it 'raiseのアクションが受付られる' do
+#          Game.tern_action(@data)
+
+        end
+      end
+      context 'それまでにcallがいる場合' do
+        it 'callは再度アクションが必要になる' do
+
+        end
+      end
+    end
+  end
   describe 'is_round_all' do
     before do
     end
