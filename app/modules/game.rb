@@ -39,9 +39,9 @@ module Game
            'chip' => chip
          })
     # raiseが入ったらfold, all_in 以外は再アクション
-    # if ta.is_raise?
+    if ta.is_raise?
       ;
-    # end
+    end
 
     # 勝者を判定
     return if judge_winners(room_id, hand_id)

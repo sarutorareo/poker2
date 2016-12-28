@@ -3,9 +3,12 @@ class TernActionRaise < TernAction
     @chip = chip
   end
   def kbn
-    return ACT_KBN_RAISE
+    ACT_KBN_RAISE
   end
   def kbn_str
-    return 'raise'
+    'raise'
+  end
+  def raise?
+    true
   end
 end

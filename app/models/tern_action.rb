@@ -34,6 +34,9 @@ class TernAction
     end
   end
   def active?
-    return true
+    true
+  end
+  def raise?
+    false
   end
 end

@@ -12,5 +12,8 @@ RSpec.describe TernActionFold, type: :model do
   it 'activeはfalseを返す' do
     expect(@tern_action_fold.active?).to eq(false)
   end
+  it 'raise?はfalseを返す' do
+    expect(@tern_action_fold.raise?).to eq(false)
+  end
 end
 

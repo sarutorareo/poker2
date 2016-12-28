@@ -8,6 +8,7 @@ RSpec.describe TernActionCall, type: :model do
     expect(@tern_action_call.kbn).to eq(TernAction::ACT_KBN_CALL)
     expect(@tern_action_call.chip).to eq(100)
     expect(@tern_action_call.kbn_str).to eq('call')
+    expect(@tern_action_call.raise?).to eq(false)
   end
 end
 
