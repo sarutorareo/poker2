@@ -12,7 +12,7 @@ class DlJudgeUserHandWinnerForm < DlHandFormBase
     if hand.blank?
       raise ArgumentError, "hand_id '#{@hand_id}' is not exists"
     end
-    DlJudgeUserHandWinnerService.new(hand_users)
+    DlJudgeUserHandWinnerService.new(hand.hand_users)
   end
 end
 
