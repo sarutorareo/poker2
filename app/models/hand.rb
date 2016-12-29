@@ -106,6 +106,6 @@ class Hand < ApplicationRecord
   end
 
   def get_hand_users_to_reset_by_raise(uid)
-    hand_users.select{|hu| (hu.user_id != uid) && hu.last_action.active? && !hu.last_action.all_in?}
+    hand_users.select{|hu| (hu.user_id != uid) && !hu.last_action.fold? && !hu.last_action.all_in?}
   end
 end

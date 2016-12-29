@@ -34,8 +34,8 @@ class TernAction
     end
   end
 
-  def active?
-    true
+  def fold?
+    false
   end
 
   def all_in?

@@ -33,10 +33,11 @@ RSpec.describe TernAction, type: :model do
       expect(action.chip).to eq(100)
     end
   end
-  describe 'active?' do
+
+  describe 'not_fold?' do
     it 'baseはtrue' do
       action = TernAction.new
-      expect(action.active?).to eq(true)
+      expect(action.fold?).to eq(false)
     end
   end
 

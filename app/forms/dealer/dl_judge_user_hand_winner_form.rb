@@ -12,7 +12,7 @@ class DlJudgeUserHandWinnerForm < DlHandFormBase
     if hand.blank?
       raise ArgumentError, "hand_id '#{@hand_id}' is not exists"
     end
-    hand_users = hand.hand_users.select{|hu| hu.last_action.active?}
+    hand_users = hand.hand_users.select{|hu| !hu.last_action.fold?}
     DlJudgeUserHandWinnerService.new(hand_users)
   end
 end
