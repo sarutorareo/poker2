@@ -8,7 +8,7 @@ class DlTernActionService < DlHandServiceBase
   def do!()
     hand = Hand.find(@hand_id)
     unless hand.tern_user?(@user_id)
-      return
+      return nil
     end
 
     hand_user = hand.hand_users.where(:user_id => @user_id).first
@@ -39,5 +39,6 @@ class DlTernActionService < DlHandServiceBase
       hand_user.save!
       hand.save!
     end
+    @tern_action
   end
 end

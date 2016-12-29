@@ -38,6 +38,8 @@ module Game
            'action_kbn' => action_kbn,
            'chip' => chip
          })
+    return if ta.nil?
+
     # raiseが入ったらfold, all_in 以外は再アクション
     if ta.raise?
       _reset_all_user_action_for_raise!(hand_id, user_id)
@@ -176,8 +178,7 @@ private
         :tern_action => ta
       })
     srv = df.build_service
-    srv.do!
-    return ta
+    return srv.do!
   end
 
   # fold, all_in しているユーザーを除いてactionをresetする
