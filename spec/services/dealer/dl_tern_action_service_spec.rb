@@ -150,41 +150,41 @@ RSpec.describe DlTernActionService, type: :service do
       end
     end
   end
-#  describe 'do! (現在のhandにおけるcall額とmin_raise額)' do
-#    before do
-#      @user_1 = FactoryGirl.create(:user, :chip=>1000)
-#      @user_2 = FactoryGirl.create(:user, :chip=>1000)
-#      @room = Room.find(1)
-#      button_user = @user_1
-#      @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: button_user
-#      @hand.users << @user_1
-#      @hand.users << @user_2
-#      @hand.save!
-#
-#      @data = {}
-#      @data[:hand_id] = 0
-#      @data[:user_id] = 0
-#      @data[:tern_action] = TernActionNull
-#    end
-#    context 'user_1がプリフロップでBBに対してRaiseした場合' do
-#      before do
-#        @data[:hand_id] = @hand.id
-#        @data[:user_id] = @user_1.id
-#        @data[:tern_action] = TernActionRaise.new(1000)
-#        df = DlTernActionForm.new(@data)
-#        @ds = df.build_service
-#      end
-#      it 'call_chipはraise後の額に、min_raise_chipは、元のcall額に上乗せされた額' do
-#        hand = Hand.find(@hand.id)
-#        expect(hand.call_chip).to eq(100)
-#        expect(hand.min_raise_chip).to eq(200)
-#
-#        @ds.do!()
-#
-#        hand = Hand.find(@hand.id)
-#        expect(hand.call_chip).to eq(200)
-#        expect(hand.min_raise_chip).to eq(400)
-#      end
-#    end
-#  end
+  describe 'do! (現在のhandにおけるcall額とmin_raise額)' do
+    before do
+      @user_1 = FactoryGirl.create(:user, :chip=>1000)
+      @user_2 = FactoryGirl.create(:user, :chip=>1000)
+      @room = Room.find(1)
+      button_user = @user_1
+      @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: button_user
+      @hand.users << @user_1
+      @hand.users << @user_2
+      @hand.save!
+
+      @data = {}
+      @data[:hand_id] = 0
+      @data[:user_id] = 0
+      @data[:tern_action] = TernActionNull
+    end
+    context 'user_1がプリフロップでBBに対してRaiseした場合' do
+      before do
+        @data[:hand_id] = @hand.id
+        @data[:user_id] = @user_1.id
+        @data[:tern_action] = TernActionRaise.new(200)
+        df = DlTernActionForm.new(@data)
+        @ds = df.build_service
+      end
+      it 'call_chipはraise後の額に、min_raise_chipは、元のcall額に上乗せされた額' do
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(100)
+        expect(hand.min_raise_chip).to eq(200)
+
+        @ds.do!
+
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(200)
+        expect(hand.min_raise_chip).to eq(300)
+      end
+    end
+  end
 end

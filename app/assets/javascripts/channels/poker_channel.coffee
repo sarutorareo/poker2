@@ -19,6 +19,7 @@ App.poker = App.cable.subscriptions.create {channel: "PokerChannel", room_id: $(
     console.log data
     if (data['type'] == "msg_hand_users")
       $('#hand_users').html data['DOM_hand_user_list']
+      $('#round_rules').html data['DOM_round_rules']
     else if (data['type'] == "msg_update_betting_round")
       $('#betting_round').html data['DOM_betting_round']
     else if (data['type'] == "msg_update_board")

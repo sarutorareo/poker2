@@ -30,6 +30,19 @@ class Hand < ApplicationRecord
     @board = CardList.new_from_str(self.board_str)
   }
 
+  def initialize(*)
+    super
+    self.call_chip = 100
+    self.min_raise_chip = 200
+  end
+
+  def raise_chip(chip)
+    raise "raise short chip" if chip < self.call_chip
+    org_call_chip = self.call_chip
+    self.call_chip = chip
+    self.min_raise_chip = self.call_chip + (chip - org_call_chip)
+  end
+
   def create_hand_users!( user_ids )
     user_ids.each do | id |
       user = User.find(id)
@@ -76,14 +89,6 @@ class Hand < ApplicationRecord
   def next_betting_round
     raise 'betting_round is over' if (self.betting_round == BR_RIVER)
     self.betting_round += 1
-  end
-
-  def call_chip
-    100
-  end
-
-  def min_raise_chip
-    200
   end
 
   def get_hand_users_to_reset_by_raise(uid)

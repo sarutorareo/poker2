@@ -500,4 +500,47 @@ RSpec.describe Hand, type: :model do
       expect(hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_CALL)
     end
   end
+  describe "raise_chip" do
+    context "new直後の場合" do
+      before do
+        @hand = Hand.new
+      end
+      it "call_chip == 100, min_raise_chip == 200" do
+        expect(@hand.call_chip).to eq(100)
+        expect(@hand.min_raise_chip).to eq(200)
+      end
+    end
+    context "200にraiseした場合" do
+      before do
+        @hand = Hand.new
+      end
+      it "call_chip == 200, min_raise_chip == 300" do
+        @hand.raise_chip(200)
+        expect(@hand.call_chip).to eq(200)
+        expect(@hand.min_raise_chip).to eq(300)
+      end
+    end
+    context "200にraiseしたあと、更に300にraiseした場合" do
+      before do
+        @hand = Hand.new
+      end
+      it "call_chip == 300, min_raise_chip == 400" do
+        @hand.raise_chip(200)
+        @hand.raise_chip(300)
+        expect(@hand.call_chip).to eq(300)
+        expect(@hand.min_raise_chip).to eq(400)
+      end
+    end
+    context "150にraiseしたあと、更に300にraiseした場合" do
+      before do
+        @hand = Hand.new
+      end
+      it "call_chip == 300, min_raise_chip == 450" do
+        @hand.raise_chip(150)
+        @hand.raise_chip(300)
+        expect(@hand.call_chip).to eq(300)
+        expect(@hand.min_raise_chip).to eq(450)
+      end
+    end
+  end
 end
