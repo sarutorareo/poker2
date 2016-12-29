@@ -20,9 +20,7 @@ class DlJudgeActionWinnerService < DlHandServiceBase
       active_users << hu
     end
 
-    if (active_users.count != 1)
-      return 
-    end
+    return if active_users.count != 1
 
     self.winner_user_id = active_users[0].user_id
   end

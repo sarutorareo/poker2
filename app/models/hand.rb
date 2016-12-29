@@ -37,27 +37,8 @@ class Hand < ApplicationRecord
     end
   end
 
-  def get_tern_user_index
-    index = 0
-    self.hand_users.each do |hu|
-      if hu.user_id == self.tern_user.id
-        break
-      end
-      index += 1
-    end
-    #p "index = #{index}, users.count = #{self.users.count} #{users.inspect}"
-    if index >= self.users.count
-      raise "index >= self.users.count"
-    end
-    return index
-  end
-
   def rotate_tern!
-    index = self.get_tern_user_index
-    index += 1
-    if index >= self.hand_users.count
-      index = 0
-    end
+    index = _get_next_tern_user_index(_get_tern_user_index)
     user = User.find(self.hand_users[index].user_id)
     self.tern_user = user
   end
@@ -66,11 +47,11 @@ class Hand < ApplicationRecord
     if self.hand_users.count == 0
       return 0
     end
-    return self.hand_users[self.hand_users.count-1].tern_order
+    self.hand_users[self.hand_users.count-1].tern_order
   end
 
   def tern_user?(user_id)
-    return self.tern_user.id == user_id.to_i
+    self.tern_user.id == user_id.to_i
   end
 
   def rotated_all?
@@ -79,7 +60,7 @@ class Hand < ApplicationRecord
         return false
       end
     end
-    return true
+    true
   end
 
   def betting_round_str
@@ -107,5 +88,32 @@ class Hand < ApplicationRecord
 
   def get_hand_users_to_reset_by_raise(uid)
     hand_users.select{|hu| (hu.user_id != uid) && !hu.last_action.fold? && !hu.last_action.all_in?}
+  end
+
+private
+
+  def _get_tern_user_index
+    index = -1
+    self.hand_users.each_with_index do |hu, i|
+      if hu.user_id == self.tern_user.id
+        index = i
+        break
+      end
+    end
+    if index == -1
+      raise "no tern_user"
+    end
+    index
+  end
+
+  def _get_next_tern_user_index(current_index)
+    index = current_index + 1
+    index = 0 if index >= hand_users.count
+    while index != current_index do
+      break if (!hand_users[index].last_action.fold? && !hand_users[index].last_action.all_in?)
+      index = index + 1
+      index = 0 if index >= hand_users.count
+    end
+    index
   end
 end

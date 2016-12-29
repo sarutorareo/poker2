@@ -18,16 +18,16 @@ RSpec.describe DlStartHandService, type: :service do
       @ds = df.build_service
     end
     context 'next_betting_roundをしたとき' do
-      before do
-      end
       it 'プリフロップ⇒フロップに変わる' do
         @ds.do!
         @hand = Hand.find(@hand.id)
         expect(@hand.betting_round).to eq(Hand::BR_FLOP)
       end
+    end
+    context '全員がCallのとき' do
       it '全員のactionがTernAction::ACT_KBN_NULLになっている' do
         @hand.hand_users.each do |hu|
-          hu.last_action = TernActionCall.new(100)
+          hu.last_action = TernActionCall.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL, 100)
           hu.save!
         end
         @hand.save!
@@ -35,6 +35,39 @@ RSpec.describe DlStartHandService, type: :service do
         @hand = Hand.find(@hand.id)
         @hand.hand_users.each do |hu|
           expect(hu.last_action.kind_of?(TernActionNull)).to eq(true)
+        end
+      end
+    end
+    context 'CallとFoldが混ざっているとき' do
+      it 'CallのactionがTernAction::ACT_KBN_NULLになっていて、Foldのactionはキープされている' do
+        @hand.hand_users.each_with_index do |hu, i|
+          hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_FOLD) if i == 0
+          hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL, 100) if i != 0
+          hu.save!
+        end
+        @hand.save!
+        @ds.do!
+        @hand = Hand.find(@hand.id)
+        @hand.hand_users.each_with_index do |hu, i|
+          expect(hu.last_action.kbn).to eq(TernAction::ACT_KBN_FOLD) if i == 0
+          expect(hu.last_action.kbn).to eq(TernAction::ACT_KBN_NULL) if i != 0
+        end
+      end
+    end
+    context 'CallとAllInが混ざっているとき' do
+      it 'CallのactionがTernAction::ACT_KBN_NULLになっていて、Foldのactionはキープされている' do
+        @hand.hand_users.each_with_index do |hu, i|
+          hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL_ALL_IN, 100) if i == 0
+          hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL, 100) if i != 0
+          hu.save!
+        end
+        @hand.save!
+        @ds.do!
+        @hand = Hand.find(@hand.id)
+        @hand.hand_users.each_with_index do |hu, i|
+          expect(hu.last_action.kbn).to eq(TernAction::ACT_KBN_CALL_ALL_IN) if i == 0
+          expect(hu.last_action.chip).to eq(100) if i == 0
+          expect(hu.last_action.kbn).to eq(TernAction::ACT_KBN_NULL) if i != 0
         end
       end
     end

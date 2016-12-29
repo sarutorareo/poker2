@@ -16,7 +16,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
     context 'user_1:AA, user_2:KKなら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_1.id)
+          if hu.user_id == @user_1.id
             hu.user_hand << Card.new_from_str("SA")
             hu.user_hand << Card.new_from_str("CA")
           else
@@ -37,7 +37,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
     context 'user_1:52, user_2:35なら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_1.id)
+          if hu.user_id == @user_1.id
             hu.user_hand << Card.new_from_str("S5")
             hu.user_hand << Card.new_from_str("C2")
           else
@@ -58,7 +58,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
     context 'user_1:52, user_2:25なら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_1.id)
+          if hu.user_id == @user_1.id
             hu.user_hand << Card.new_from_str("S5")
             hu.user_hand << Card.new_from_str("C2")
           else
@@ -80,7 +80,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
     context 'user_1:78, user_2:93なら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_1.id)
+          if hu.user_id == @user_1.id
             hu.user_hand << Card.new_from_str("C7")
             hu.user_hand << Card.new_from_str("H8")
           else
@@ -102,7 +102,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
     context 'user_1:93, user_2:78なら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_1.id)
+          if hu.user_id == @user_1.id
             hu.user_hand << Card.new_from_str("H9")
             hu.user_hand << Card.new_from_str("C3")
           else

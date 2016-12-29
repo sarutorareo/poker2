@@ -61,7 +61,7 @@ RSpec.describe Hand, type: :model do
       end
     end
   end
-  describe "get_tern_user_index" do
+  describe "_get_tern_user_index" do
     before do
       @user_1 = FactoryGirl.create(:user)
       @user_2 = FactoryGirl.create(:user)
@@ -79,7 +79,7 @@ RSpec.describe Hand, type: :model do
           @hand.tern_user = @user_1
         end
         it "インデックス = 0" do
-          expect(@hand.get_tern_user_index).to eq(0)
+          expect(@hand.send(:_get_tern_user_index)).to eq(0)
         end
       end
       context "user_2の場合" do 
@@ -87,7 +87,7 @@ RSpec.describe Hand, type: :model do
           @hand.tern_user = @user_2
         end
         it "インデックス = 1" do
-          expect(@hand.get_tern_user_index).to eq(1)
+          expect(@hand.send(:_get_tern_user_index)).to eq(1)
         end
       end
     end
@@ -101,7 +101,7 @@ RSpec.describe Hand, type: :model do
           @hand.tern_user = @user_1
         end
         it "インデックス = 1" do
-          expect(@hand.get_tern_user_index).to eq(1)
+          expect(@hand.send(:_get_tern_user_index)).to eq(1)
         end
       end
       context "user_2の場合" do 
@@ -109,7 +109,7 @@ RSpec.describe Hand, type: :model do
           @hand.tern_user = @user_2
         end
         it "インデックス = 0" do
-          expect(@hand.get_tern_user_index).to eq(0)
+          expect(@hand.send(:_get_tern_user_index)).to eq(0)
         end
       end
     end
@@ -151,26 +151,102 @@ RSpec.describe Hand, type: :model do
       @room.users << @user_3
       @button_user = @user_1
       @hand = Hand.create! room_id: @room.id, button_user: @button_user, tern_user: @user_2
+      @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time )
     end
-    context "Create直後" do 
-      it "user_2がターンユーザー" do
-        expect(@hand.tern_user.id).to eq(@user_2.id)
+    context "誰もアクションしていない, 二人目の次を探すとき" do
+      before do
+        @hand.tern_user = @user_2
+      end
+      context "Create直後" do
+        it "user_2がターンユーザー" do
+          expect(@hand.tern_user.id).to eq(@user_2.id)
+        end
+      end
+      context "start_hand後、rotateをしたら" do
+        it "３人目の人がターンユーザー" do
+          @hand.rotate_tern!
+          expect(@hand.tern_user.id).to eq(@user_3.id)
+        end
+      end
+      context "start_hand後、rotate, さらにrotateをしたら" do
+        it "1人目の人がターンユーザー" do
+          @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time )
+          @hand.rotate_tern!
+          expect(@hand.tern_user.id).to eq(@user_3.id)
+          @hand.rotate_tern!
+          expect(@hand.tern_user.id).to eq(@user_1.id)
+        end
       end
     end
-    context "start_hand後、rotateをしたら" do 
-      it "３人目の人がターンユーザー" do
-        @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time )
-        @hand.rotate_tern!
-        expect(@hand.tern_user.id).to eq(@user_3.id)
+    context "foldした人がいるとき" do
+      context "１人目の次を探すとき" do
+        before do
+          @hand.tern_user = @user_1
+        end
+        context "Create直後" do
+          it "user_1がターンユーザー" do
+            expect(@hand.tern_user.id).to eq(@user_1.id)
+          end
+        end
+        context "2人目がFoldしていたら" do
+          before do
+            hu = @hand.hand_users.select{|hu| hu.user_id == @user_2.id}.first
+            hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_FOLD)
+          end
+          it "３人目の人がターンユーザー" do
+            @hand.rotate_tern!
+            expect(@hand.tern_user.id).to eq(@user_3.id)
+          end
+        end
+      end
+      context "2人目の次を探すとき" do
+        before do
+          @hand.tern_user = @user_2
+        end
+        context "Create直後" do
+          it "user_2がターンユーザー" do
+            expect(@hand.tern_user.id).to eq(@user_2.id)
+          end
+        end
+        context "3人目がFoldしていたら" do
+          before do
+            hu = @hand.hand_users.select{|hu| hu.user_id == @user_3.id}.first
+            hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_FOLD)
+          end
+          it "1人目の人がターンユーザー" do
+            @hand.rotate_tern!
+            expect(@hand.tern_user.id).to eq(@user_1.id)
+          end
+        end
       end
     end
-    context "start_hand後、rotate, さらにrotateをしたら" do 
-      it "1人目の人がターンユーザー" do
-        @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time )
-        @hand.rotate_tern!
-        expect(@hand.tern_user.id).to eq(@user_3.id)
-        @hand.rotate_tern!
-        expect(@hand.tern_user.id).to eq(@user_1.id)
+    context "all_inした人がいるとき" do
+      context "１人目の次を探すとき" do
+        context "2人目がAllInしていたら" do
+          before do
+            hu = @hand.hand_users.select{|hu| hu.user_id == @user_2.id}.first
+            hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL_ALL_IN, 200)
+          end
+          it "３人目の人がターンユーザー" do
+            @hand.rotate_tern!
+            expect(@hand.tern_user.id).to eq(@user_3.id)
+          end
+        end
+      end
+      context "2人目の次を探すとき" do
+        before do
+          @hand.tern_user = @user_2
+        end
+        context "3人目がFoldしていたら" do
+          before do
+            hu = @hand.hand_users.select{|hu| hu.user_id == @user_3.id}.first
+            hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL_ALL_IN, 300)
+          end
+          it "1人目の人がターンユーザー" do
+            @hand.rotate_tern!
+            expect(@hand.tern_user.id).to eq(@user_1.id)
+          end
+        end
       end
     end
   end

@@ -16,7 +16,6 @@ class DlTernActionService < DlHandServiceBase
       raise "hand_user not found (hand_id=#{@hand_id}, user_id=#{@user_id}"
     end
     user = User.find(@user_id)
-    diff_chip = hand_user.hand_total_chip
     if @tern_action.chip > 0 && @tern_action.chip >= user.chip
       user.chip = 0
       if @tern_action.chip <= hand.call_chip

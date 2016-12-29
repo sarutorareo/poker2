@@ -7,7 +7,6 @@ RSpec.describe DlStartHandService, type: :service do
       @user_1 = FactoryGirl.create(:user)
       @user_2 = FactoryGirl.create(:user)
       @room = Room.find(1)
-      button_user = 
       @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_2
       @hand.users << @user_1
       @hand.users << @user_2
@@ -17,8 +16,6 @@ RSpec.describe DlStartHandService, type: :service do
       @ds = df.build_service
     end
     context 'start_handをしたとき' do
-      before do
-      end
       it '@handのデッキがシャッフルされている' do
         deck = Deck.new
         hand_deck = @hand.deck

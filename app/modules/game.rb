@@ -114,6 +114,7 @@ module Game
   end
 
 private
+
   def self._dbg_last_action_list(h)
     p '############# in _dbg_last_action_list'
     result = ''
@@ -149,7 +150,7 @@ private
         :hand_id => hand_id
       })
     srv = df.build_service
-    srv.do!()
+    srv.do!
 
     # 配ったカードをクライアント毎に送る
     hand = Hand.find(hand_id)
@@ -175,7 +176,7 @@ private
         :tern_action => ta
       })
     srv = df.build_service
-    srv.do!()
+    srv.do!
     return ta
   end
 
@@ -218,7 +219,7 @@ private
         :hand_id => hand_id
       })
     srv = df.build_service
-    srv.do!()
+    srv.do!
 
     _send_betting_round(room_id, hand_id)
     _send_board(room_id, hand_id)

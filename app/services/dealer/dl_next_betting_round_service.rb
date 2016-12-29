@@ -9,6 +9,8 @@ class DlNextBettingRoundService < DlHandServiceBase
     hand.next_betting_round
     # ユーザーのアクションをリセット
     hand.hand_users.each do |hu|
+      next if hu.last_action.fold?
+      next if hu.last_action.all_in?
       hu.last_action = TernActionNull.new
       hu.save!
     end
