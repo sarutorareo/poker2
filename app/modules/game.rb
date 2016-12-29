@@ -95,7 +95,7 @@ module Game
   def self.prompt_tern_action_to_next_user(room_id, hand_id)
     user = get_next_tern_user(hand_id)
     if user.is_cpu?
-      ta = user.tern_action
+      ta = user.tern_action(Hand.find(hand_id))
       data = {}
       data['room_id'] = room_id
       data['hand_id'] = hand_id

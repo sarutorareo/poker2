@@ -8,17 +8,17 @@ class User < ApplicationRecord
   has_many :hands, through: :hand_users
 
   after_initialize do
-    if (self.user_type == UT_CPU)
+    if self.user_type == UT_CPU
       self.extend(CpuUser)
     end
   end
 
-  def tern_action
-    return nil
+  def tern_action(hand)
+    nil
   end
 
   def is_cpu?
-    return false
+    false
   end
 
     #ActionCable.server.broadcast "hand_user_channel_#{room_id}_#{user_id}", {type: "prompt_tern_action", DOM_prompt_tern_action: render_prompt_tern_action(user_id)}
