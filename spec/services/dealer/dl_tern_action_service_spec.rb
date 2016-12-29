@@ -55,7 +55,7 @@ RSpec.describe DlTernActionService, type: :service do
           expect(hand_user.hand_total_chip).to eq(0)
           expect(User.find(@user_2.id).chip).to eq(1000)
 
-          @ds.do!()
+          @ds.do!
           @hand = Hand.find(@hand.id)
           #user_2のlast_actionが更新されている
           hand_user = @hand.hand_users.where(:user_id => @user_2.id).first
@@ -79,7 +79,7 @@ RSpec.describe DlTernActionService, type: :service do
           @ds = df.build_service
         end
         it 'ユーザーのchipは100減って、hand_total_chipが200になる, handのcall_chipは200になる' do
-          @ds.do!()
+          @ds.do!
           hand = Hand.find(@hand.id)
           #user_2のlast_actionが更新されている
           hand_user = hand.hand_users.where(:user_id => @user_1.id).first

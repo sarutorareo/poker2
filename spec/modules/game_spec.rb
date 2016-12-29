@@ -151,9 +151,9 @@ RSpec.describe Game, type: :module do
   describe '_reset_all_user_action_for_raise' do
     before do
       @room = Room.find(1)
-      @user_1 = FactoryGirl.create(:user, :chip=>101)
-      @user_2 = FactoryGirl.create(:user, :chip=>102)
-      @user_3 = FactoryGirl.create(:user, :chip=>103)
+      @user_1 = FactoryGirl.create(:user, :chip=>1010)
+      @user_2 = FactoryGirl.create(:user, :chip=>1020)
+      @user_3 = FactoryGirl.create(:user, :chip=>1030)
       @room.users << @user_1
       @room.users << @user_2
       @room.users << @user_3

@@ -1,7 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-
+  before do
+    @hand_mock = double('hand_mock')
+    allow(@hand_mock).to receive(:call_chip).and_return(100)
+    allow(@hand_mock).to receive(:min_raise_chip).and_return(200)
+  end
   context 'デフォルトの場合' do
     before do
       @user = FactoryGirl.create(:user)
@@ -13,15 +17,13 @@ RSpec.describe User, type: :model do
       expect(@user.user_type).to eq(0)
     end
     it 'tern_actionを返すことはできない' do
-      expect(@user.tern_action.kind_of?(TernAction)).to eq(false)
+      expect(@user.tern_action(@hand_mock).kind_of?(TernAction)).to eq(false)
     end
     it 'is_cpu?はfalse' do
       expect(@user.is_cpu?).to eq(false)
     end
   end
   context 'CPUの場合' do
-    before do
-    end
     it 'user_type は 1(CPU)' do
       @user = FactoryGirl.create(:user, :user_type=>1)
       @user = User.find(@user.id)
@@ -30,11 +32,11 @@ RSpec.describe User, type: :model do
     it 'tern_actionを返すことができる(Factoryで生成されたインスタンスのafter_initializeは、属性値を代入する前に呼ばれているため、User.findで読み直している' do
       @user = FactoryGirl.create(:user, :user_type=>1)
       @user = User.find(@user.id)
-      expect(@user.tern_action.kind_of?(TernAction)).to eq(true)
+      expect(@user.tern_action(@hand_mock).kind_of?(TernAction)).to eq(true)
     end
     it 'newの場合は一発でuser_type=1になるため、読み直す必要なくafter_initializeにより、CpuUserがextendされる' do
       @user = User.new(:user_type=>1)
-      expect(@user.tern_action.kind_of?(TernAction)).to eq(true)
+      expect(@user.tern_action(@hand_mock).kind_of?(TernAction)).to eq(true)
     end
     it 'is_cpu?はfalse' do
       @user = User.new(:user_type=>1)

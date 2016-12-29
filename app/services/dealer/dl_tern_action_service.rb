@@ -18,6 +18,7 @@ class DlTernActionService < DlHandServiceBase
 
     user = User.find(@user_id)
     if @tern_action.chip > 0 && @tern_action.chip >= user.chip
+      @tern_action.chip = user.chip if @tern_action.chip > user.chip
       user.chip = 0
       if @tern_action.chip <= hand.call_chip
         @tern_action = TernActionCallAllIn.new(@tern_action.chip)
