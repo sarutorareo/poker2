@@ -9,8 +9,10 @@ class DlJudgeUserHandWinnerService
   def do!()
     max_hand_users = []
     @hand_users.each do |hu|
+      # foldしているなら
+      next if hu.last_action.fold?
       # 一人目なら
-      if (max_hand_users.blank?) 
+      if max_hand_users.blank?
         max_hand_users << hu
       # 記録更新なら
       elsif hu.user_hand.hicard_than?(max_hand_users[0].user_hand)
