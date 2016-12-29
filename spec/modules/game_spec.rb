@@ -87,21 +87,162 @@ RSpec.describe Game, type: :module do
   end
   describe 'tern_action' do
     before do
-      @user = User.new()
-      @hand_mock = double('hand_mock')
-      @data = {}
+      @room = Room.find(1)
+      @user_1 = FactoryGirl.create(:user, :chip=>101)
+      @user_2 = FactoryGirl.create(:user, :chip=>102)
+      @room.users << @user_1
+      @room.users << @user_2
+      @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+      @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time)
+      @param = {
+          'room_id' => @room.id,
+          'hand_id' => @hand.id,
+          'user_id' => @user_1.id,
+          'action_kbn' => TernAction::ACT_KBN_CALL,
+          'chip' => 100
+      }
+    end
+    context 'callの場合' do
+      context '誰もアクションしていない場合' do
+        it 'callのアクションが受付られる' do
+          Game.tern_action(@param)
+          hand = Hand.find(@hand.id)
+          expect(hand.hand_users[0].user_id).to eq(@user_1.id)
+          expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_CALL)
+          expect(hand.hand_users[0].last_action.chip).to eq(100)
+          expect(hand.hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_NULL)
+          expect(hand.hand_users[1].last_action.chip).to eq(0)
+        end
+      end
     end
     context 'raiseの場合' do
+      before do
+        @param['action_kbn'] = TernAction::ACT_KBN_RAISE
+      end
       context '誰もアクションしていない場合' do
         it 'raiseのアクションが受付られる' do
-#          Game.tern_action(@data)
+          Game.tern_action(@param)
 
+          hand = Hand.find(@hand.id)
+          expect(hand.hand_users[0].user_id).to eq(@user_1.id)
+          expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_RAISE)
+          expect(hand.hand_users[0].last_action.chip).to eq(100)
         end
       end
       context 'それまでにcallがいる場合' do
-        it 'callは再度アクションが必要になる' do
-
+        before do
+          Game.tern_action(@param)
+          @param['user_id'] = @user_2.id
+          @param['action_kbn'] = TernAction::ACT_KBN_RAISE
         end
+        it 'callは再度アクションが必要になる' do
+          Game.tern_action(@param)
+          hand = Hand.find(@hand.id)
+          expect(hand.hand_users[0].user_id).to eq(@user_1.id)
+          expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_NULL)
+          expect(hand.hand_users[0].last_action.chip).to eq(0)
+          expect(hand.hand_users[1].user_id).to eq(@user_2.id)
+          expect(hand.hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_RAISE)
+          expect(hand.hand_users[1].last_action.chip).to eq(100)
+        end
+      end
+    end
+  end
+  describe '_reset_all_user_action_for_raise' do
+    before do
+      @room = Room.find(1)
+      @user_1 = FactoryGirl.create(:user, :chip=>101)
+      @user_2 = FactoryGirl.create(:user, :chip=>102)
+      @user_3 = FactoryGirl.create(:user, :chip=>103)
+      @room.users << @user_1
+      @room.users << @user_2
+      @room.users << @user_3
+      @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+      @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time)
+      @param = {
+          'room_id' => @room.id,
+          'hand_id' => @hand.id,
+          'user_id' => @user_1.id,
+          'action_kbn' => TernAction::ACT_KBN_CALL,
+          'chip' => 100
+      }
+    end
+    context 'callしている人がいて、二人目がraiseした場合' do
+      before do
+        # call
+        Game.tern_action(@param)
+        @hand.hand_users[1].last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_RAISE, 200)
+        @hand.hand_users[1].save!
+      end
+      it 'callしていた人はアクションしていないことになる, raiseした本人はアクションをキープする' do
+        hand = Hand.find(@hand.id)
+        expect(hand.hand_users[0].user_id).to eq(@user_1.id)
+        expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_CALL)
+
+        Game.send(:_reset_all_user_action_for_raise!, @hand.id, @user_2.id)
+
+        hand = Hand.find(@hand.id)
+        expect(hand.hand_users[0].user_id).to eq(@user_1.id)
+        expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_NULL)
+        expect(hand.hand_users[0].last_action.chip).to eq(0)
+        expect(hand.hand_users[0].hand_total_chip).to eq(100)
+        expect(hand.hand_users[1].user_id).to eq(@user_2.id)
+        expect(hand.hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_RAISE)
+        expect(hand.hand_users[1].last_action.chip).to eq(200)
+      end
+    end
+    context 'callしている人とfoldしている人がいる場合' do
+      before do
+        # call
+        Game.tern_action(@param)
+        # fold
+        @param['user_id'] = @user_2.id
+        @param['action_kbn'] = TernAction::ACT_KBN_FOLD
+        @param['chip'] = 0
+        Game.tern_action(@param)
+      end
+      it 'callしていた人はアクションしていないことになる, Foldしていた人はそのまま' do
+        Game.send(:_reset_all_user_action_for_raise!, @hand.id, @user_3.id)
+
+        hand = Hand.find(@hand.id)
+        expect(hand.hand_users[0].user_id).to eq(@user_1.id)
+        expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_NULL)
+        expect(hand.hand_users[0].last_action.chip).to eq(0)
+        expect(hand.hand_users[0].hand_total_chip).to eq(100)
+        expect(hand.hand_users[1].user_id).to eq(@user_2.id)
+        expect(hand.hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_FOLD)
+        expect(hand.hand_users[1].last_action.chip).to eq(0)
+        expect(hand.hand_users[1].hand_total_chip).to eq(0)
+      end
+    end
+    context 'all_inしている人がいる場合' do
+      before do
+        # all_in
+        @param['action_kbn'] = TernAction::ACT_KBN_CALL_ALL_IN
+        @param['chip'] = 100
+        Game.tern_action(@param)
+        # all_in
+        @param['user_id'] = @user_2.id
+        @param['action_kbn'] = TernAction::ACT_KBN_RAISE_ALL_IN
+        @param['chip'] = 200
+        Game.tern_action(@param)
+      end
+      it 'callしていた人はアクションしていないことになる, Foldしていた人はそのまま' do
+        hand = Hand.find(@hand.id)
+        expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_CALL_ALL_IN)
+        expect(hand.hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_RAISE_ALL_IN)
+
+        Game.send(:_reset_all_user_action_for_raise!, @hand.id, @user_3.id)
+
+        hand = Hand.find(@hand.id)
+        expect(hand.hand_users[0].user_id).to eq(@user_1.id)
+        expect(hand.hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_CALL_ALL_IN)
+        expect(hand.hand_users[0].last_action.chip).to eq(100)
+        expect(hand.hand_users[0].hand_total_chip).to eq(100)
+        expect(hand.hand_users[1].user_id).to eq(@user_2.id)
+        expect(hand.hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_RAISE_ALL_IN)
+        expect(hand.hand_users[1].last_action.chip).to eq(200)
+        expect(hand.hand_users[1].hand_total_chip).to eq(200)
       end
     end
   end
@@ -125,7 +266,7 @@ RSpec.describe Game, type: :module do
   end
   describe 'get_next_tern_user' do
     before do
-      @user = User.new()
+      @user = User.new(:name => 'test_user')
       @hand_mock = double('hand_mock')
     end
     context 'handが存在する場合' do

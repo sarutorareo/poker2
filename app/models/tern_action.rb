@@ -21,7 +21,7 @@ class TernAction
     raise 'dont call abstract'
   end
 
-  def self.new_from_kbn_and_chip(kbn, chip)
+  def self.new_from_kbn_and_chip(kbn, chip = 0)
     case kbn
     when ACT_KBN_NULL then return TernActionNull.new
     when ACT_KBN_FOLD then return TernActionFold.new
@@ -33,9 +33,15 @@ class TernAction
       raise 'invalid tern_action_kbn'
     end
   end
+
   def active?
     true
   end
+
+  def all_in?
+    false
+  end
+
   def raise?
     false
   end

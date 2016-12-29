@@ -34,14 +34,14 @@ RSpec.describe Room, type: :model do
         @room.users << @user2
       end
       it "二人分のid配列が返される" do
-        ar = @room.get_room_user_ids
+        ar = @room.get_room_user_ids_sorted_by_user_type_enter_time
         expect(ar.count).to eq(2)
         expect(ar[0].is_a?(Integer)).to eq(true)
       end
     end
     context "ユーザーが一人もいない場合" do
       it "長さ0の配列が返される" do
-        ar = @room.get_room_user_ids
+        ar = @room.get_room_user_ids_sorted_by_user_type_enter_time
         expect(ar.count).to eq(0)
       end
     end
@@ -58,7 +58,7 @@ RSpec.describe Room, type: :model do
         @room.users << @user1
       end
       it "一人分の(user_id, room_user_id, user_type)を含む構造体の配列が作られる" do
-        result = @room.send(:make_room_users_with_user_type_array)
+        result = @room.send(:get_room_users_with_user_type_array)
         expect(result.count).to eq(1)
         expect(result[0].user_id).to eq(@user1.id)
         expect(result[0].room_user_id).to eq(@room.room_users[0].id)
@@ -73,7 +73,7 @@ RSpec.describe Room, type: :model do
         @room_user_id_2 = @room.room_users[1].id
       end
       it "追加した順に構造体(user_id, room_user_id, user_type)の配列が作られる" do
-        result = @room.send(:make_room_users_with_user_type_array)
+        result = @room.send(:get_room_users_with_user_type_array)
         expect(result.count).to eq(2)
         expect(result[0].user_id).to eq(@user1.id)
         expect(result[0].room_user_id).to eq(@room_user_id_1)
@@ -91,7 +91,7 @@ RSpec.describe Room, type: :model do
         @room_user_id_1 = @room.room_users[1].id
       end
       it "追加した順に構造体(user_id, room_user_id, user_type)の配列が作られる" do
-        result = @room.send(:make_room_users_with_user_type_array)
+        result = @room.send(:get_room_users_with_user_type_array)
         expect(result.count).to eq(2)
         expect(result[0].user_id).to eq(@user2.id)
         expect(result[0].room_user_id).to eq(@room_user_id_2)
@@ -111,7 +111,7 @@ RSpec.describe Room, type: :model do
         @room_user_id_1 = @room.room_users[2].id
       end
       it "一人分の(user_id, room_user_id, user_type)を含む構造体の配列が作られる" do
-        result = @room.send(:make_room_users_with_user_type_array)
+        result = @room.send(:get_room_users_with_user_type_array)
         expect(result.count).to eq(3)
         expect(result[0].user_id).to eq(@user2.id)
         expect(result[0].room_user_id).to eq(@room_user_id_2)

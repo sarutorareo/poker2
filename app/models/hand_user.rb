@@ -22,7 +22,7 @@ class HandUser < ApplicationRecord
   }
 
   def last_action_kbn_str
-    return last_action.kbn_str
+    last_action.kbn_str
   end
 
 private

@@ -25,11 +25,11 @@ module Game
 
   # ユーザーのアクションを処理する
   def self.tern_action(param)
-    room_id = param.fetch('room_id', nil)
-    hand_id = param.fetch('hand_id', nil)
-    user_id = param.fetch('user_id', nil)
-    action_kbn = param.fetch('action_kbn', nil)
-    chip = param.fetch('chip', 0)
+    room_id = Integer(param.fetch('room_id', nil))
+    hand_id = Integer(param.fetch('hand_id', nil))
+    user_id = Integer(param.fetch('user_id', nil))
+    action_kbn = Integer(param.fetch('action_kbn', nil))
+    chip = Integer(param.fetch('chip', 0))
 
     # ユーザーのアクションを処理する
     ta = _accept_user_action({
@@ -39,8 +39,8 @@ module Game
            'chip' => chip
          })
     # raiseが入ったらfold, all_in 以外は再アクション
-    if ta.is_raise?
-      ;
+    if ta.raise?
+      _reset_all_user_action_for_raise!(hand_id, user_id)
     end
 
     # 勝者を判定
@@ -55,6 +55,10 @@ module Game
 
     # 次のユーザーにアクションを促す
     prompt_tern_action_to_next_user(room_id, hand_id)
+  rescue => e
+    ColorLog.clog e.message
+    ColorLog.clog e.backtrace
+    raise e
   end
 
   def self.judge_winners(room_id, hand_id)
@@ -128,12 +132,12 @@ private
     room_id = data[:room_id]
     room = Room.find(room_id)
 
-    user_ids = room.make_room_users_with_user_type_array.map{|u| u.user_id}
+    user_ids = room.get_room_user_ids_sorted_by_user_type_enter_time
     rais 'no room_user' if user_ids.blank?
 
     button_user = User.find(user_ids[0])
     hand = Hand.create! room_id: room.id, button_user: button_user, tern_user: button_user
-    hand.start_hand!(user_ids)
+    hand.create_hand_users!(user_ids)
     hand.save!
     return hand
   end
@@ -152,10 +156,6 @@ private
     hand.hand_users.each do |hu|
       DealCardsJob.perform_later room_id, hu.user.id, hu.user_hand.to_disp_s
     end
-  end
-
-  def self._send_betting_round(room_id, hand_id)
-    SendBettingRoundJob.perform_later room_id, Hand.find(hand_id).betting_round_str
   end
 
   # ユーザーのアクションを処理する
@@ -178,7 +178,20 @@ private
     srv.do!()
     return ta
   end
-  
+
+  # fold, all_in しているユーザーを除いてactionをresetする
+  def self._reset_all_user_action_for_raise!(hand_id, user_id)
+    hand = _get_hand(hand_id)
+
+    ApplicationRecord.transaction do
+      hand.get_hand_users_to_reset_by_raise(user_id).each do |hu|
+        hu.last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_NULL)
+        hu.save!
+      end
+      hand.save!
+    end
+  end
+
   # アクションまたはハンドによる勝者を判定する
   def self._judge_winners(hand_id)
     action_winner = _judge_action_winner(hand_id)

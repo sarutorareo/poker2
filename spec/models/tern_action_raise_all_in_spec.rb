@@ -10,5 +10,6 @@ RSpec.describe TernActionRaiseAllIn, type: :model do
     expect(@tern_action_raise_all_in.kbn_str).to eq('all_in(raise)')
     expect(@tern_action_raise_all_in.active?).to eq(true)
     expect(@tern_action_raise_all_in.raise?).to eq(true)
+    expect(@tern_action_raise_all_in.all_in?).to eq(true)
   end
 end

@@ -37,10 +37,6 @@ class Hand < ApplicationRecord
     end
   end
 
-  def start_hand!( user_ids )
-    create_hand_users!( user_ids )
-  end
-
   def get_tern_user_index
     index = 0
     self.hand_users.each do |hu|
@@ -97,16 +93,19 @@ class Hand < ApplicationRecord
   end
 
   def next_betting_round
-    if (self.betting_round == BR_RIVER)
-      raise 'betting_round is over'
-    end
+    raise 'betting_round is over' if (self.betting_round == BR_RIVER)
     self.betting_round += 1
   end
 
   def call_chip
-    return 100
+    100
   end
+
   def min_raise_chip
-    return 200
+    200
+  end
+
+  def get_hand_users_to_reset_by_raise(uid)
+    hand_users.select{|hu| (hu.user_id != uid) && hu.last_action.active? && !hu.last_action.all_in?}
   end
 end

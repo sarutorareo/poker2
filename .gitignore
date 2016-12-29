@@ -45,3 +45,20 @@ public/assets/*
 
 # test/stubs以下は上げない(railsプロジェクトから拾ってくる)
 test/stubs/*
+
+# coverageは上げない
+coverage
+
+# Sensitive or high-churn files:
+.idea/dataSources/
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+
+# 自動生成された雑多なファイル
+.idea/workspace.xml
+.idea/.generators
+.idea/.rakeTasks

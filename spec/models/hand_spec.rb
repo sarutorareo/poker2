@@ -41,7 +41,7 @@ RSpec.describe Hand, type: :model do
         @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: button_user
       end
       it "二人分hand_userが作られる" do
-        @hand.create_hand_users!(@room.get_room_user_ids)
+        @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time)
         expect(@hand.hand_users.count).to eq(2)
         # "DBに値が保存されている"
         expect(HandUser.count(:hand_id == @hand.id)).to eq(2)
@@ -56,7 +56,7 @@ RSpec.describe Hand, type: :model do
         @hand = Hand.create! room_id: @room.id, button_user: button_user, tern_user: button_user
       end
       it "長さ0のhand_userが作られる" do
-        @hand.create_hand_users!(@room.get_room_user_ids)
+        @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time)
         expect(@hand.hand_users.count).to eq(0)
       end
     end
@@ -129,7 +129,7 @@ RSpec.describe Hand, type: :model do
     context "start_handをしたら" do 
       it "handのusersが作られる" do
         expect(@hand.users.count).to eq(0)
-        @hand.start_hand!( @room.get_room_user_ids )
+        @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time )
         expect(@hand.users.count).to eq(3)
         expect(@hand.users[0].id).to eq(@user_1.id)
         expect(@hand.users[1].id).to eq(@user_2.id)
@@ -159,14 +159,14 @@ RSpec.describe Hand, type: :model do
     end
     context "start_hand後、rotateをしたら" do 
       it "３人目の人がターンユーザー" do
-        @hand.start_hand!( @room.get_room_user_ids )
+        @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time )
         @hand.rotate_tern!
         expect(@hand.tern_user.id).to eq(@user_3.id)
       end
     end
     context "start_hand後、rotate, さらにrotateをしたら" do 
       it "1人目の人がターンユーザー" do
-        @hand.start_hand!( @room.get_room_user_ids )
+        @hand.create_hand_users!(@room.get_room_user_ids_sorted_by_user_type_enter_time )
         @hand.rotate_tern!
         expect(@hand.tern_user.id).to eq(@user_3.id)
         @hand.rotate_tern!
@@ -391,6 +391,37 @@ RSpec.describe Hand, type: :model do
       @hand.betting_round = Hand::BR_PREFLOP
       @hand.next_betting_round
       expect(@hand.betting_round).to eq(Hand::BR_FLOP)
+    end
+  end
+  describe 'get_hand_users_to_reset_by_raise' do
+    before do
+      @hand = Hand.new
+      @user_1 = User.new(:id => 1, :name => 'test1')
+      @user_2 = User.new(:id => 2, :name => 'test2')
+      @user_3 = User.new(:id => 3, :name => 'test3')
+      @user_4 = User.new(:id => 4, :name => 'test4')
+      @user_5 = User.new(:id => 5, :name => 'test5')
+      @user_6 = User.new(:id => 6, :name => 'test6')
+      @hand.users << @user_1
+      @hand.users << @user_2
+      @hand.users << @user_3
+      @hand.users << @user_4
+      @hand.users << @user_5
+      @hand.users << @user_6
+      @hand.hand_users[0].last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_RAISE, 200)
+      @hand.hand_users[1].last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL, 200)
+      @hand.hand_users[2].last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_FOLD)
+      @hand.hand_users[3].last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_CALL_ALL_IN, 200)
+      @hand.hand_users[4].last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_RAISE_ALL_IN, 400)
+      @hand.hand_users[5].last_action = TernAction.new_from_kbn_and_chip(TernAction::ACT_KBN_RAISE, 800)
+    end
+    it 'RAISEした人、FOLD, CALL_ALL_IN, RAISE_ALL_INを除いたユーザーのみが抽出される' do
+      hand_users = @hand.get_hand_users_to_reset_by_raise(@user_6.id)
+      expect(hand_users.size).to eq(2)
+      expect(hand_users[0].user_id).to eq(@user_1.id)
+      expect(hand_users[0].last_action.kbn).to eq(TernAction::ACT_KBN_RAISE)
+      expect(hand_users[1].user_id).to eq(@user_2.id)
+      expect(hand_users[1].last_action.kbn).to eq(TernAction::ACT_KBN_CALL)
     end
   end
 end
