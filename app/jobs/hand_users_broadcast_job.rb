@@ -15,6 +15,6 @@ class HandUsersBroadcastJob < ApplicationJob
   end
 
   def _render_round_rules(hand)
-    "to call:#{hand.call_chip}, to minimum raise:#{hand.min_raise_chip}"
+    ApplicationController.renderer.render(partial: 'hand/round_rules', locals: { hand: hand } )
   end
 end

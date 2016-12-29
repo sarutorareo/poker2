@@ -20,6 +20,7 @@ App.poker = App.cable.subscriptions.create {channel: "PokerChannel", room_id: $(
     if (data['type'] == "msg_hand_users")
       $('#hand_users').html data['DOM_hand_user_list']
       $('#round_rules').html data['DOM_round_rules']
+      $('#raise_chip').val($('#min_raise_chip').val())
     else if (data['type'] == "msg_update_betting_round")
       $('#betting_round').html data['DOM_betting_round']
     else if (data['type'] == "msg_update_board")
@@ -44,11 +45,11 @@ $(document).on 'click', '#fold_button', (event) ->
   event.preventDefault()
 
 $(document).on 'click', '#call_button', (event) ->
-  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_CALL, 100
+  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_CALL, Number($('#call_chip').val())
   event.preventDefault()
 
 $(document).on 'click', '#raise_button', (event) ->
-  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_RAISE, Number($('#raise_amount').val())
+  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_RAISE, Number($('#raise_chip').val())
   event.preventDefault()
 
 do_on_document_readay = ->
