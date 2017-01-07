@@ -45,11 +45,11 @@ $(document).on 'click', '#fold_button', (event) ->
   event.preventDefault()
 
 $(document).on 'click', '#call_button', (event) ->
-  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_CALL, Number($('#call_chip').val())
+  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_CALL, Number($('#call_chip').val()) - Number($('#round_total_chip').val())
   event.preventDefault()
 
 $(document).on 'click', '#raise_button', (event) ->
-  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_RAISE, Number($('#raise_chip').val())
+  App.poker.tern_action $('#room_id').val(), $('#hand_id').val(), $('#user_id').val(), ACT_KBN_RAISE, Number($('#raise_chip').val()) - Number($('#round_total_chip').val())
   event.preventDefault()
 
 do_on_document_readay = ->
