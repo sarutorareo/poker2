@@ -49,17 +49,20 @@ RSpec.describe DlTernActionService, type: :service do
           df = DlTernActionForm.new(@data)
           @ds = df.build_service
         end
-        it 'hand_userのlast_action, hand_total_chipが更新される' do
+        it 'hand_userのlast_action, round_total_chip, hand_total_chipが更新される' do
           expect(@hand.tern_user.id).to eq(@user_2.id)
           hand_user = @hand.hand_users.where(:user_id => @user_2.id).first
           expect(hand_user.hand_total_chip).to eq(0)
           expect(User.find(@user_2.id).chip).to eq(1000)
 
           @ds.do!
+
           @hand = Hand.find(@hand.id)
           #user_2のlast_actionが更新されている
           hand_user = @hand.hand_users.where(:user_id => @user_2.id).first
           expect(hand_user.last_action.kind_of?(TernActionCall)).to eq(true)
+          expect(hand_user.last_action.chip).to eq(100)
+          expect(hand_user.round_total_chip).to eq(100)
           expect(hand_user.hand_total_chip).to eq(100)
           expect(User.find(@user_2.id).chip).to eq(900)
           #tern_userはuser_1になる
@@ -69,6 +72,7 @@ RSpec.describe DlTernActionService, type: :service do
       context 'user_1が元々100かけている時に、さらに100を上乗せして200にraiseした場合' do
         before do
           @hand_user = @hand.hand_users.where(:user_id => @user_1.id).first
+          @hand_user.round_total_chip = 100
           @hand_user.hand_total_chip = 100
           @hand_user.save!
 
@@ -84,6 +88,8 @@ RSpec.describe DlTernActionService, type: :service do
           #user_2のlast_actionが更新されている
           hand_user = hand.hand_users.where(:user_id => @user_1.id).first
           expect(hand_user.last_action.kind_of?(TernActionRaise)).to eq(true)
+          expect(hand_user.last_action.chip).to eq(100)
+          expect(hand_user.round_total_chip).to eq(200)
           expect(hand_user.hand_total_chip).to eq(200)
           expect(User.find(@user_1.id).chip).to eq(900)
         end
@@ -117,7 +123,7 @@ RSpec.describe DlTernActionService, type: :service do
           @ds = df.build_service
         end
         it 'CallAllInしたことになる' do
-          @ds.do!()
+          @ds.do!
           @hand = Hand.find(@hand.id)
           #user_1のlast_actionが更新されている
           hand_user = @hand.hand_users.where(:user_id => @user_1.id).first
@@ -139,7 +145,8 @@ RSpec.describe DlTernActionService, type: :service do
         it 'hand_userのactionが更新されない' do
           expect(@hand.tern_user.id).to eq(@user_1.id)
 
-          @ds.do!()
+          @ds.do!
+
           @hand = Hand.find(@hand.id)
           #user_2のlast_actionが更新されていない
           hand_user = @hand.hand_users.where(:user_id => @user_2.id).first

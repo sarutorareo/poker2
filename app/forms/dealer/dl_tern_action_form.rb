@@ -27,9 +27,9 @@ class DlTernActionForm < DlHandFormBase
 
   def tern_user?
     hand = Hand.find_by_id(@hand_id)
-    if (hand == nil)
+    if hand == nil
       return false
     end
-    return hand.tern_user.id == @user_id
+    hand.tern_user.id == @user_id
   end
 end

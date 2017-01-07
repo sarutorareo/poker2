@@ -15,6 +15,7 @@ RSpec.describe HandUser, type: :model do
       it "オーダーは1" do
         expect(@hand.hand_users[0].tern_order).to eq(1)
         expect(@hand.hand_users[0].last_action_chip).to eq(0)
+        expect(@hand.hand_users[0].round_total_chip).to eq(0)
         expect(@hand.hand_users[0].hand_total_chip).to eq(0)
       end
     end

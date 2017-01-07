@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DlTernActionForm, type: :form do
-  describe 'recieve' do
+  describe 'recieve params' do
     it 'パラメータを受け取る' do
       data = {}
       data[:hand_id] = 3
@@ -105,6 +105,25 @@ RSpec.describe DlTernActionForm, type: :form do
       it 'valid?=true' do
         form = DlTernActionForm.new(@data)
         expect(form.valid?).to eq(true)
+      end
+    end
+    context '自分の順番の場合' do
+      before do
+        @data[:user_id] = @user_1.id
+      end
+      it 'valid?=false' do
+        form = DlTernActionForm.new(@data)
+        expect(form.valid?).to eq(true)
+      end
+    end
+    context '自分の順番じゃない場合' do
+      before do
+        @data[:user_id] = @user_2.id
+      end
+      it 'valid?=false' do
+        pending ('test')
+        form = DlTernActionForm.new(@data)
+        expect(form.valid?).to eq(false)
       end
     end
   end

@@ -29,6 +29,7 @@ class DlTernActionService < DlHandServiceBase
       user.chip -= @tern_action.chip
     end
 
+    hand_user.round_total_chip += @tern_action.chip
     hand_user.hand_total_chip += @tern_action.chip
     hand_user.last_action = @tern_action
 
