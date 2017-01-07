@@ -21,6 +21,12 @@ class HandUser < ApplicationRecord
     @last_action = TernAction.new_from_kbn_and_chip(self.last_action_kbn, self.last_action_chip)
   }
 
+  # 保存された時にクライアントにround_total_chipを伝える
+  after_commit {
+    #round_total_chip ジョブを作成
+    SendRoundTotalChipJob.perform_later hand.room_id, user_id, round_total_chip
+  }
+
   def last_action_kbn_str
     last_action.kbn_str
   end

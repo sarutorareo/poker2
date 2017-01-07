@@ -13,5 +13,7 @@ App.hand_user_channel = App.cable.subscriptions.create {channel: "HandUserChanne
     console.log data
     if (data['type'] == "deal_cards")
       $('#user_hand').html data['DOM_cards']
+    else if (data['type'] == "send_round_total_chip")
+      $('#round_total_chip').html data['DOM_round_total_chip']
     else
       alert('type not defined:'+ data['type'])

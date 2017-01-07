@@ -6,7 +6,8 @@
     <th>ハンドユーザー名</th>
     <th>action</th>
     <th>action_chip</th>
-    <th>hand_total_chip</th>
+    <th>round_total</th>
+    <th>hand_total</th>
   </tr>
   <% hand.hand_users.each do | hu | %>
     <tr>
@@ -15,6 +16,7 @@
       <th><%= hu.user.name %></th>
       <th><%= hu.last_action_kbn_str %></th>
       <th><%= hu.last_action_chip %></th>
+      <th><%= hu.round_total_chip %></th>
       <th><%= hu.hand_total_chip %></th>
     </tr>
   <% end %>
