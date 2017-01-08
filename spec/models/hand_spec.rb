@@ -8,6 +8,7 @@ RSpec.describe Hand, type: :model do
     it 'デフォルトはプリフロップ' do
       expect(@hand.betting_round).to eq(Hand::BR_PREFLOP)
       expect(@hand.board.count).to eq(0)
+      expect(@hand.big_blind).to eq(100)
       expect(@hand.call_chip).to eq(100)
       expect(@hand.min_raise_chip).to eq(200)
     end

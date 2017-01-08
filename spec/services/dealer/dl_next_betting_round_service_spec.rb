@@ -12,16 +12,21 @@ RSpec.describe DlStartHandService, type: :service do
       @hand.users << @user_1
       @hand.users << @user_2
       @hand.betting_round = Hand::BR_PREFLOP
+      @hand.big_blind = 100
+      @hand.call_chip = 200
+      @hand.min_raise_chip = 300
       @hand.save!
-      
+
       df = DlNextBettingRoundForm.new({:hand_id => @hand.id})
       @ds = df.build_service
     end
     context 'next_betting_roundをしたとき' do
-      it 'プリフロップ⇒フロップに変わる' do
+      it 'プリフロップ⇒フロップに変わる, call_chipは0, min_raise_chipはbig_blindと同額になる' do
         @ds.do!
         @hand = Hand.find(@hand.id)
         expect(@hand.betting_round).to eq(Hand::BR_FLOP)
+        expect(@hand.call_chip).to eq(0)
+        expect(@hand.min_raise_chip).to eq(@hand.big_blind)
       end
     end
     context '全員がCallのとき' do

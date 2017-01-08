@@ -7,6 +7,8 @@ class DlNextBettingRoundService < DlHandServiceBase
     hand = Hand.find(@hand_id)
     # ベッティングラウンドを進める
     hand.next_betting_round
+    hand.call_chip = 0
+    hand.min_raise_chip = hand.big_blind
     # ユーザーのアクションとround_total_chipをリセット
     hand.hand_users.each do |hu|
       next if hu.last_action.fold?
