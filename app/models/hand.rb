@@ -96,6 +96,10 @@ class Hand < ApplicationRecord
     hand_users.select{|hu| (hu.user_id != uid) && !hu.last_action.fold? && !hu.last_action.all_in?}
   end
 
+  def get_hand_user_from_user_id(user_id)
+    hand_users.where(:user_id => user_id).first
+  end
+
 private
 
   def _get_tern_user_index
@@ -122,4 +126,5 @@ private
     end
     index
   end
+
 end

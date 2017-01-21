@@ -2,9 +2,13 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   before do
+    @hand_user_mock = double('hand_user_mock')
+    allow(@hand_user_mock).to receive(:round_total_chip).and_return(100)
+
     @hand_mock = double('hand_mock')
     allow(@hand_mock).to receive(:call_chip).and_return(100)
     allow(@hand_mock).to receive(:min_raise_chip).and_return(200)
+    allow(@hand_mock).to receive(:get_hand_user_from_user_id).and_return(@hand_user_mock)
   end
   context 'デフォルトの場合' do
     before do
