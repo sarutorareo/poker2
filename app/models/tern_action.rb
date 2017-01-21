@@ -1,5 +1,6 @@
 class TernAction
   include ActiveModel::Model
+  # TernActionのchipはもともと出していた額(round_total_chip)に上乗せする差額
   attr_reader :chip
 
   ACT_KBN_NULL = nil

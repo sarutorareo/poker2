@@ -543,5 +543,43 @@ RSpec.describe Hand, type: :model do
         expect(@hand.min_raise_chip).to eq(450)
       end
     end
+    context "少ない額でall_inした場合" do
+      context "もともと100/200のところを50でall_in場合" do
+        before do
+          @hand = Hand.new
+        end
+        it "call_chip == 100, min_raise_chip == 200" do
+          @hand.raise_chip(50)
+          expect(@hand.call_chip).to eq(100)
+          expect(@hand.min_raise_chip).to eq(200)
+        end
+      end
+      context "500にraiseした(500/900)あと、更に899にraiseした場合" do
+        before do
+          @hand = Hand.new
+        end
+        it "call_chip == 800, min_raise_chip == 900(もともとのmin_raise_chipよりも下回る額でraiseされた場合はmin_raise_chipは変化しない)" do
+          @hand.raise_chip(500)
+          expect(@hand.call_chip).to eq(500)
+          expect(@hand.min_raise_chip).to eq(900)
+          @hand.raise_chip(899)
+          expect(@hand.call_chip).to eq(899)
+          expect(@hand.min_raise_chip).to eq(900)
+        end
+      end
+      context "500にraiseした(500/900)あと、更に900にraiseした場合" do
+        before do
+          @hand = Hand.new
+        end
+        it "call_chip == 800, min_raise_chip == 900(もともとのmin_raise_chipよりも下回る額でraiseされた場合はmin_raise_chipは変化しない)" do
+          @hand.raise_chip(500)
+          expect(@hand.call_chip).to eq(500)
+          expect(@hand.min_raise_chip).to eq(900)
+          @hand.raise_chip(900)
+          expect(@hand.call_chip).to eq(900)
+          expect(@hand.min_raise_chip).to eq(1300)
+        end
+      end
+    end
   end
 end

@@ -3,9 +3,9 @@ class TernActionCall < TernAction
     @chip = chip
   end
   def kbn
-    return ACT_KBN_CALL
+    ACT_KBN_CALL
   end
   def kbn_str
-    return 'call'
+    'call'
   end
 end

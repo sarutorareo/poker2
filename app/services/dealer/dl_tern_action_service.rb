@@ -33,7 +33,7 @@ class DlTernActionService < DlHandServiceBase
     hand_user.hand_total_chip += @tern_action.chip
     hand_user.last_action = @tern_action
 
-    hand.raise_chip(@tern_action.chip) if @tern_action.raise?
+    hand.raise_chip(hand_user.round_total_chip) if @tern_action.raise?
 
     ApplicationRecord.transaction do
       hand.rotate_tern!

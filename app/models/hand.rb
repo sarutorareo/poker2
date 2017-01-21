@@ -40,8 +40,8 @@ class Hand < ApplicationRecord
   def raise_chip(chip)
     raise "raise short chip" if chip <= 0
     org_call_chip = self.call_chip
-    self.call_chip = chip
-    self.min_raise_chip = self.call_chip + (chip - org_call_chip)
+    self.call_chip = chip if chip >= self.call_chip
+    self.min_raise_chip = self.call_chip + (chip - org_call_chip) if chip >= self.min_raise_chip
   end
 
   def create_hand_users!( user_ids )

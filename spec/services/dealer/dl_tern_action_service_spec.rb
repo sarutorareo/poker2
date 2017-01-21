@@ -94,6 +94,31 @@ RSpec.describe DlTernActionService, type: :service do
           expect(User.find(@user_1.id).chip).to eq(900)
         end
       end
+      context 'user_1が元々100かけている時に、さらに100を上乗せして200をcallした場合' do
+        before do
+          @hand_user = @hand.hand_users.where(:user_id => @user_1.id).first
+          @hand_user.round_total_chip = 100
+          @hand_user.hand_total_chip = 100
+          @hand_user.save!
+
+          @data[:hand_id] = @hand.id
+          @data[:user_id] = @user_1.id
+          @data[:tern_action] = TernActionCall.new(100)
+          df = DlTernActionForm.new(@data)
+          @ds = df.build_service
+        end
+        it 'ユーザーのchipは100減って、hand_total_chipが200になる, handのcall_chipは200になる' do
+          @ds.do!
+          hand = Hand.find(@hand.id)
+          #user_2のlast_actionが更新されている
+          hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+          expect(hand_user.last_action.kind_of?(TernActionCall)).to eq(true)
+          expect(hand_user.last_action.chip).to eq(100)
+          expect(hand_user.round_total_chip).to eq(200)
+          expect(hand_user.hand_total_chip).to eq(200)
+          expect(User.find(@user_1.id).chip).to eq(900)
+        end
+      end
       context 'user_1がチップ量ちょうどでRaiseした場合' do
         before do
           @data[:hand_id] = @hand.id
@@ -103,7 +128,7 @@ RSpec.describe DlTernActionService, type: :service do
           @ds = df.build_service
         end
         it 'RaiseAllInしたことになる' do
-          @ds.do!()
+          @ds.do!
           @hand = Hand.find(@hand.id)
           #user_1のlast_actionが更新されている
           hand_user = @hand.hand_users.where(:user_id => @user_1.id).first
@@ -173,7 +198,7 @@ RSpec.describe DlTernActionService, type: :service do
       @data[:user_id] = 0
       @data[:tern_action] = TernActionNull
     end
-    context 'user_1がプリフロップでBBに対してRaiseした場合' do
+    context 'user_1がプリフロップでBB=100に対して200を出して200にRaiseした場合' do
       before do
         @data[:hand_id] = @hand.id
         @data[:user_id] = @user_1.id
@@ -181,16 +206,106 @@ RSpec.describe DlTernActionService, type: :service do
         df = DlTernActionForm.new(@data)
         @ds = df.build_service
       end
-      it 'call_chipはraise後の額に、min_raise_chipは、元のcall額に上乗せされた額' do
+      it 'call_chipはraise後の額に、min_raise_chipは、新しいcall_chipに(元のcall額とraise後の差額)を足した額' do
         hand = Hand.find(@hand.id)
         expect(hand.call_chip).to eq(100)
         expect(hand.min_raise_chip).to eq(200)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(0)
 
         @ds.do!
 
         hand = Hand.find(@hand.id)
         expect(hand.call_chip).to eq(200)
         expect(hand.min_raise_chip).to eq(300)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(200)
+      end
+    end
+    context 'プリフロップでcall_chip=100に対してもともと100出していたuser_1がさらに200を上乗せして合計300にRaiseした場合' do
+      before do
+        @data[:hand_id] = @hand.id
+        @data[:user_id] = @user_1.id
+        @data[:tern_action] = TernActionRaise.new(200)
+        hand_user = @hand.hand_users.where(:user_id => @user_1.id).first
+        hand_user.round_total_chip = 100
+        hand_user.save!
+
+        df = DlTernActionForm.new(@data)
+        @ds = df.build_service
+      end
+      it 'call_chipはraise後の額に、min_raise_chipは、新しいcall_chipに(元のcall額とraise後の差額)を足した額' do
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(100)
+        expect(hand.min_raise_chip).to eq(200)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(100)
+
+        @ds.do!
+
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(300)
+        expect(hand.min_raise_chip).to eq(500)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(300)
+      end
+    end
+    context 'user_1がプリフロップでmin_raise_chip=1000に対して400を出してall_inした場合' do
+      before do
+        @hand.call_chip = 500
+        @hand.min_raise_chip = 1000
+        @hand.save!
+
+        @data[:hand_id] = @hand.id
+        @data[:user_id] = @user_1.id
+        @data[:tern_action] = TernActionCall.new(400)
+
+        df = DlTernActionForm.new(@data)
+        @ds = df.build_service
+      end
+      it 'call_chipはraise後の額に、min_raise_chipは、新しいcall_chipに(元のcall額とraise後の差額)を足した額' do
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(500)
+        expect(hand.min_raise_chip).to eq(1000)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(0)
+
+        @ds.do!
+
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(500)
+        expect(hand.min_raise_chip).to eq(1000)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(400)
+      end
+    end
+    context 'user_1がプリフロップでmin_raise_chip=1000に対して900を出してall_inした場合' do
+      before do
+        @hand.call_chip = 500
+        @hand.min_raise_chip = 1000
+        @hand.save!
+
+        @data[:hand_id] = @hand.id
+        @data[:user_id] = @user_1.id
+        @data[:tern_action] = TernActionRaise.new(900)
+
+        df = DlTernActionForm.new(@data)
+        @ds = df.build_service
+      end
+      it 'call_chipはraise後の額に、min_raise_chipは、もともとのmin_raise_chipを下回る額でraiseしているため、変化しない' do
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(500)
+        expect(hand.min_raise_chip).to eq(1000)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(0)
+
+        @ds.do!
+
+        hand = Hand.find(@hand.id)
+        expect(hand.call_chip).to eq(900)
+        expect(hand.min_raise_chip).to eq(1000)
+        hand_user = hand.hand_users.where(:user_id => @user_1.id).first
+        expect(hand_user.round_total_chip).to eq(900)
       end
     end
   end
