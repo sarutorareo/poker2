@@ -296,7 +296,7 @@ RSpec.describe Hand, type: :model do
         time = Time.current
         travel_to(time) do
           assertion = {
-            job: HandUsersBroadcastJob,
+            job: BloadcastHandUsersJob,
             #args: @room_user,
             at: (time + WAIT_TIME_HAND_USERS_BROAD_CAST_JOB).to_i
           }
@@ -304,7 +304,7 @@ RSpec.describe Hand, type: :model do
             @hand.save!
           }
           assertion = {
-            job: RoomUsersBroadcastJob,
+            job: BloadcastRoomUsersJob,
             #args: @room_user,
             at: (time + WAIT_TIME_ROOM_USERS_BROAD_CAST_JOB).to_i
           }
@@ -323,7 +323,7 @@ RSpec.describe Hand, type: :model do
         time = Time.current
         travel_to(time) do
           assertion = {
-            job: HandUsersBroadcastJob,
+            job: BloadcastHandUsersJob,
             #args: @room_user,
             at: (time + WAIT_TIME_HAND_USERS_BROAD_CAST_JOB).to_i
           }
@@ -332,7 +332,7 @@ RSpec.describe Hand, type: :model do
             @hand.save!
           }
           assertion = {
-            job: RoomUsersBroadcastJob,
+            job: BloadcastRoomUsersJob,
             #args: @room_user,
             at: (time + WAIT_TIME_ROOM_USERS_BROAD_CAST_JOB).to_i
           }

@@ -24,7 +24,7 @@ class HandUser < ApplicationRecord
   # 保存された時にクライアントにround_total_chipを伝える
   after_commit {
     #round_total_chip ジョブを作成
-    SendRoundTotalChipJob.perform_later hand.room_id, user_id, round_total_chip
+    BloadcastRoundTotalChipJob.perform_later hand.room_id, user_id, round_total_chip
   }
 
   def last_action_kbn_str
