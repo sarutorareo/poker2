@@ -6,7 +6,7 @@ module Game
   def self.start_hand(room_id)
     # 引数の検証
     raise ArgumentError.new "room_user is blank" if Room.find(room_id).room_users.blank?
-    add_cpu_user=false
+    add_cpu_user=true
     _add_cpu_user_to_room(room_id) if add_cpu_user
     _remove_cpu_user_to_room(room_id) unless add_cpu_user
 
