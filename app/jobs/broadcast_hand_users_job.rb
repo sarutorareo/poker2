@@ -1,7 +1,7 @@
 require 'color_log'
 
 WAIT_TIME_HAND_USERS_BROAD_CAST_JOB = 0
-class BloadcastHandUsersJob < ApplicationJob
+class BroadcastHandUsersJob < ApplicationJob
   queue_as :default
 
   def perform(room_id, hand_id)

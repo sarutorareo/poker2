@@ -6,7 +6,7 @@ RSpec.describe Message, type: :model do
       time = Time.current
       travel_to(time) do
         assertion = {
-          job: BloadcastMessageJob,
+          job: BroadcastMessageJob,
   #        args: @message,
   #        at: (time).to_i
         }

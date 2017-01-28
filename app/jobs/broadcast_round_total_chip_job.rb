@@ -1,4 +1,4 @@
-class BloadcastRoundTotalChipJob < ApplicationJob
+class BroadcastRoundTotalChipJob < ApplicationJob
   queue_as :default
 
   def perform(room_id, user_id, round_total_chip)

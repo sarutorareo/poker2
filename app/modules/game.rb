@@ -253,11 +253,11 @@ private
   end
 
   def self._send_betting_round(room_id, hand_id)
-    BloadcastBettingRoundJob.perform_later room_id, Hand.find(hand_id).betting_round_str
+    BroadcastBettingRoundJob.perform_later room_id, Hand.find(hand_id).betting_round_str
   end
 
   def self._send_board(room_id, hand_id)
-    BloadcastBoardJob.perform_later room_id, Hand.find(hand_id).board.to_disp_s
+    BroadcastBoardJob.perform_later room_id, Hand.find(hand_id).board.to_disp_s
   end
 
   def self._add_cpu_user_to_room(room_id)

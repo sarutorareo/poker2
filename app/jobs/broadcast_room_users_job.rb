@@ -1,5 +1,5 @@
 WAIT_TIME_ROOM_USERS_BROAD_CAST_JOB = 0
-class BloadcastRoomUsersJob < ApplicationJob
+class BroadcastRoomUsersJob < ApplicationJob
   queue_as :default
 
   def perform(room_id)
