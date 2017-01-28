@@ -49,7 +49,13 @@ module Game
     _build_pot(room_id, hand_id)
 
     # 勝者を判定
-    return if judge_winners(room_id, hand_id)
+    settlement, winners = _judge_winners(hand_id)
+    # 勝者決まったら
+    if winners.present?
+      # (ショウダウンの場合)ハンドを見せる , ポットを分配する , クライントに伝える
+      _after_hand_settlement_arrived(room_id, settlement, winners)
+      return
+    end
 
     # 1周したら次のベッティングラウンドへ
     if is_rounded_all?(hand_id)
@@ -64,29 +70,6 @@ module Game
     ColorLog.clog e.message
     ColorLog.clog e.backtrace
     raise e
-  end
-
-  def self.judge_winners(room_id, hand_id)
-    # 一周してなければ何もしない
-    unless is_rounded_all?(hand_id)
-      return false
-    end
-
-    # 勝者を判定
-    settlement, winners = _judge_winners(hand_id)
-    # 勝者決まったら
-    if winners.present?
-      # ハンドで決まったらショウダウン
-      if settlement == SETTLEMENT_HAND then
-        # TODO
-        # _showdown
-      end
-      # 勝者を伝える
-      _send_winner_message(room_id, winners)
-      # TODO
-      # srv.apply_pot(action_winners)
-      return true
-    end
   end
 
   def self.is_rounded_all?(hand_id)
@@ -197,8 +180,14 @@ private
     end
   end
 
+  # 勝者が決まったか判定
   # アクションまたはハンドによる勝者を判定する
   def self._judge_winners(hand_id)
+    # 一周してなければ何もしない
+    unless is_rounded_all?(hand_id)
+      return SETTLEMENT_NONE, nil
+    end
+
     action_winner = _judge_action_winner(hand_id)
     unless action_winner.blank?
       return SETTLEMENT_ACTION, action_winner
@@ -211,6 +200,19 @@ private
 
     # showdown
     return SETTLEMENT_HAND, _judge_user_hand_winner(hand_id)
+  end
+
+  # 決着がついたあとの処理
+  def self._after_hand_settlement_arrived(room_id, settlement, winners)
+    # ショウダウンまでいってたらカードを見せる
+    if settlement == SETTLEMENT_HAND then
+      # TODO
+      # _showdown
+    end
+    # 勝者を伝える
+    _send_winner_message(room_id, winners)
+    # ポットを分配
+    #srv.apply_pot(winners)
   end
 
   def self._send_winner_message(room_id, action_winner)
