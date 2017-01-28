@@ -385,19 +385,25 @@ RSpec.describe Game, type: :module do
   describe '_apply_pots' do
     context 'ポットがひとつ、勝者が一人の場合' do
       before do
-        @room_id = 1
         @user_1 = FactoryGirl.create(:user)
-        hu = HandUser.new
-        hu.user = @user_1
-        hand_users = []
-        hand_users << hu
+        @user_2 = FactoryGirl.create(:user)
+        @user_2.chip = 100
+        @user_2.save!
+        @room = Room.find(1)
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_2
+        @hand.users << @user_1
+        @hand.users << @user_2
+        @hand.save!
+
         @pots = []
-        @pots << Pot.new_from_values(100, hand_users)
+        @pots << Pot.new_from_values(100, @hand.hand_users.where(:user_id => @user_1.id))
       end
       it '勝者にポットが分配される' do
-        expect(@user_1.chip).to eq(0)
-        Game.send(:_apply_pots, @room_id, @pots)
-        expect(@user_1.chip).to eq(100)
+        user_1 = User.find(@user_1.id)
+        expect(user_1.chip).to eq(0)
+        Game.send(:_apply_pots, @hand.id, @pots)
+        user_1 = User.find(@user_1.id)
+        expect(user_1.chip).to eq(100)
       end
     end
   end

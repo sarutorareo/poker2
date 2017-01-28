@@ -53,14 +53,13 @@ module Game
     # 勝者決まったら
     if winners.present?
       # (ショウダウンの場合)ハンドを見せる , ポットを分配する , クライントに伝える
-      _after_hand_settlement_arrived(room_id, settlement, winners, pots)
+      _after_hand_settlement_arrived(room_id, hand_id, settlement, winners, pots)
       return
     end
 
     # 1周したら次のベッティングラウンドへ
     if is_rounded_all?(hand_id)
       # 次のベッティングラウンドへ
-      p "###############_next_betting_round"
       _next_betting_round(room_id, hand_id)
     end
 
@@ -203,7 +202,7 @@ private
   end
 
   # 決着がついたあとの処理
-  def self._after_hand_settlement_arrived(room_id, settlement, winners, pots)
+  def self._after_hand_settlement_arrived(room_id, hand_id, settlement, winners, pots)
     # ショウダウンまでいってたらカードを見せる
     if settlement == SETTLEMENT_HAND then
       # TODO
@@ -212,7 +211,7 @@ private
     # 勝者を伝える
     _send_winner_message(room_id, winners)
     # ポットを分配
-    _apply_pots(room_id, pots)
+    _apply_pots(hand_id, pots)
   end
 
   def self._send_winner_message(room_id, action_winner)
@@ -287,12 +286,17 @@ private
     pots
   end
 
-  def self._apply_pots(room_id, pots)
+  def self._apply_pots(hand_id, pots)
+    ColorLog.clog "before _apply_pots"
+    ColorLog.clog User.all
     # ユーザーのチップにポットを分配
-    df = DlApplyPotForm.new({
-            :hand_id => hand_id
+    df = DlApplyPotsForm.new({
+            :hand_id => hand_id,
+            :pots => pots
         })
     srv = df.build_service
     srv.do!
+    ColorLog.clog "after _apply_pots "
+    ColorLog.clog User.all
   end
 end

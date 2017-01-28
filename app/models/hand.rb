@@ -112,14 +112,15 @@ class Hand < ApplicationRecord
 
     # buttonの次の人から一周する
     result = []
+    added_user_indexes = []
     current_index = _get_next_tern_user_index(button_index)
-    while current_index != button_index do
+    until added_user_indexes.include?(current_index) do
+      added_user_indexes << current_index
       result << hand_users[current_index]
       current_index = _get_next_tern_user_index(current_index)
+
       raise 'result is over' if result.size > hand_users.size
     end
-    result << hand_users[current_index]
-    raise 'result is short' if result.size < hand_users.size
     result
   end
 

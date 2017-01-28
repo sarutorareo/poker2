@@ -637,5 +637,21 @@ RSpec.describe Hand, type: :model do
         expect(sorted[2].user_id).to eq(@user_3.id)
       end
     end
+    context "user_1がbuttonで、foldしている場合" do
+      before do
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+        @hand.users << @user_1
+        @hand.hand_users[0].last_action = TernActionFold.new
+        @hand.hand_users[0].save!
+        @hand.users << @user_2
+        @hand.users << @user_3
+      end
+      it '2, 3の順序でソートされる' do
+        sorted = @hand.sort_hand_users_by_bad_position
+        expect(sorted.size).to eq(2)
+        expect(sorted[0].user_id).to eq(@user_2.id)
+        expect(sorted[1].user_id).to eq(@user_3.id)
+      end
+    end
   end
 end

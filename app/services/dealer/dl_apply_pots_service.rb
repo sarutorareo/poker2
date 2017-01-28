@@ -19,20 +19,18 @@ class DlApplyPotsService < DlHandServiceBase
       end
 
       # 端数を配る
-      sorted_hand_users = hand.sort_by_bad_position.select{|hu| pot.hand_users.include?(hu)}
-      mod = chip % pot.hand_users.size
-      sorted_hand_users.each do |hu|
-        if mod <= 0
-          break
-        end
-        mod -= 1
-        hu.user.chip += 1
-      end
+      worst_position_user_id = hand.sort_hand_users_by_bad_position.select{|hu| pot.hand_users.include?(hu)}.first.user_id
+      worst_position_user = pot.hand_users.select{|hu| hu.user_id == worst_position_user_id}.first
+
+      mod = pot.chip % pot.hand_users.size
+      worst_position_user.user.chip += mod
 
       # save
       pot.hand_users.each do |hu|
         hu.user.save!
       end
+      # 間接的に BroadcastRoomUsersJobを呼び出すためにhand.save!
+      hand.save!
     end
   end
 
