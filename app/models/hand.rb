@@ -100,6 +100,29 @@ class Hand < ApplicationRecord
     hand_users.where(:user_id => user_id).first
   end
 
+  def sort_hand_users_by_bad_position
+    # buttonのindexを探す
+    button_index = 0
+    hand_users.each_with_index do |hu, index|
+      if hu.user_id == button_user.id
+        button_index = index
+        break
+      end
+    end
+
+    # buttonの次の人から一周する
+    result = []
+    current_index = _get_next_tern_user_index(button_index)
+    while current_index != button_index do
+      result << hand_users[current_index]
+      current_index = _get_next_tern_user_index(current_index)
+      raise 'result is over' if result.size > hand_users.size
+    end
+    result << hand_users[current_index]
+    raise 'result is short' if result.size < hand_users.size
+    result
+  end
+
 private
 
   def _get_tern_user_index

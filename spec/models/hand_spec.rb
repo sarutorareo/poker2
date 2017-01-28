@@ -582,4 +582,60 @@ RSpec.describe Hand, type: :model do
       end
     end
   end
+  describe "sort_hand_users_by_bad_position" do
+    before do
+      @user_1 = FactoryGirl.create(:user)
+      @user_2 = FactoryGirl.create(:user)
+      @user_3 = FactoryGirl.create(:user)
+      @room = Room.find(1)
+      @room.users << @user_1
+      @room.users << @user_2
+      @room.users << @user_3
+    end
+    context "user_1がbuttonの場合" do
+      before do
+        @hand = Hand.create! room_id: @room.id, button_user: @user_1, tern_user: @user_1
+        @hand.users << @user_1
+        @hand.users << @user_2
+        @hand.users << @user_3
+      end
+      it '2, 3, 1の順序でソートされる' do
+        sorted = @hand.sort_hand_users_by_bad_position
+        expect(sorted.size).to eq(3)
+        expect(sorted[0].user_id).to eq(@user_2.id)
+        expect(sorted[1].user_id).to eq(@user_3.id)
+        expect(sorted[2].user_id).to eq(@user_1.id)
+      end
+    end
+    context "user_2がbuttonの場合" do
+      before do
+        @hand = Hand.create! room_id: @room.id, button_user: @user_2, tern_user: @user_1
+        @hand.users << @user_1
+        @hand.users << @user_2
+        @hand.users << @user_3
+      end
+      it '3, 1, 2の順序でソートされる' do
+        sorted = @hand.sort_hand_users_by_bad_position
+        expect(sorted.size).to eq(3)
+        expect(sorted[0].user_id).to eq(@user_3.id)
+        expect(sorted[1].user_id).to eq(@user_1.id)
+        expect(sorted[2].user_id).to eq(@user_2.id)
+      end
+    end
+    context "user_3がbuttonの場合" do
+      before do
+        @hand = Hand.create! room_id: @room.id, button_user: @user_3, tern_user: @user_1
+        @hand.users << @user_1
+        @hand.users << @user_2
+        @hand.users << @user_3
+      end
+      it '1, 2, 3の順序でソートされる' do
+        sorted = @hand.sort_hand_users_by_bad_position
+        expect(sorted.size).to eq(3)
+        expect(sorted[0].user_id).to eq(@user_1.id)
+        expect(sorted[1].user_id).to eq(@user_2.id)
+        expect(sorted[2].user_id).to eq(@user_3.id)
+      end
+    end
+  end
 end

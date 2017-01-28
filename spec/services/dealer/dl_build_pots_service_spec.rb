@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe DlBuildPotService, type: :service do
+RSpec.describe DlBuildPotsService, type: :service do
   before do
     @user_1 = FactoryGirl.create(:user)
     @user_2 = FactoryGirl.create(:user)
@@ -10,7 +10,7 @@ RSpec.describe DlBuildPotService, type: :service do
     @hand.users << @user_2
     @hand.save!
 
-    df = DlBuildPotForm.new({:hand_id => @hand.id})
+    df = DlBuildPotsForm.new({:hand_id => @hand.id})
     @ds = df.build_service
   end
   describe 'do!' do

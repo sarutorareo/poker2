@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe DlBuildPotForm, type: :form do
+RSpec.describe DlBuildPotsForm, type: :form do
   describe '継承関係をテスト' do
     it 'DlHandFormBaseを継承している' do
-      expect(DlBuildPotForm < DlHandFormBase).to eq(true)
+      expect(DlBuildPotsForm < DlHandFormBase).to eq(true)
     end
   end
   describe 'build_service' do
@@ -15,9 +15,9 @@ RSpec.describe DlBuildPotForm, type: :form do
         @data[:hand_id] = 3
       end
       it 'サービスが作られる' do
-        form = DlBuildPotForm.new(@data)
+        form = DlBuildPotsForm.new(@data)
         srv = form.build_service
-        expect(srv.kind_of?(DlBuildPotService)).to eq(true)
+        expect(srv.kind_of?(DlBuildPotsService)).to eq(true)
       end
     end
   end

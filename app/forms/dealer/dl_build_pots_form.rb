@@ -1,4 +1,4 @@
-class DlBuildPotForm < DlHandFormBase
+class DlBuildPotsForm < DlHandFormBase
   include ActiveModel::Model
 
   def initialize (data)
@@ -7,7 +7,7 @@ class DlBuildPotForm < DlHandFormBase
 
   def build_service 
     check_valid_and_raise
-    DlBuildPotService.new(@hand_id)
+    DlBuildPotsService.new(@hand_id)
   end
 end
 

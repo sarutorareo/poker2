@@ -46,14 +46,14 @@ module Game
     end
 
     # potを計算してクライアントに通知
-    _build_pot(room_id, hand_id)
+    pots = _build_pot(room_id, hand_id)
 
     # 勝者を判定
     settlement, winners = _judge_winners(hand_id)
     # 勝者決まったら
     if winners.present?
       # (ショウダウンの場合)ハンドを見せる , ポットを分配する , クライントに伝える
-      _after_hand_settlement_arrived(room_id, settlement, winners)
+      _after_hand_settlement_arrived(room_id, settlement, winners, pots)
       return
     end
 
@@ -203,7 +203,7 @@ private
   end
 
   # 決着がついたあとの処理
-  def self._after_hand_settlement_arrived(room_id, settlement, winners)
+  def self._after_hand_settlement_arrived(room_id, settlement, winners, pots)
     # ショウダウンまでいってたらカードを見せる
     if settlement == SETTLEMENT_HAND then
       # TODO
@@ -212,7 +212,7 @@ private
     # 勝者を伝える
     _send_winner_message(room_id, winners)
     # ポットを分配
-    #srv.apply_pot(winners)
+    _apply_pots(room_id, pots)
   end
 
   def self._send_winner_message(room_id, action_winner)
@@ -238,7 +238,7 @@ private
         :hand_id => hand_id
       })
     srv = df.build_service
-    srv.do!()
+    srv.do!
 
     p "############# after srv.do!"
     return srv.winner_user_id
@@ -251,7 +251,7 @@ private
         :hand_id => hand_id
       })
     srv = df.build_service
-    srv.do!()
+    srv.do!
 
     p "############# after srv.do!"
     return srv.winner_user_ids
@@ -277,13 +277,22 @@ private
   end
 
   def self._build_pot(room_id, hand_id)
-    df = DlBuildPotForm.new({
+    df = DlBuildPotsForm.new({
         :hand_id => hand_id
       })
     srv = df.build_service
     pots = srv.do!
     
     BroadcastPotsJob.perform_later room_id, Marshal.dump(pots)
+    pots
   end
 
+  def self._apply_pots(room_id, pots)
+    # ユーザーのチップにポットを分配
+    df = DlApplyPotForm.new({
+            :hand_id => hand_id
+        })
+    srv = df.build_service
+    srv.do!
+  end
 end

@@ -1,4 +1,4 @@
-class DlBuildPotService < DlHandServiceBase
+class DlBuildPotsService < DlHandServiceBase
   def initialize(hand_id)
     super(hand_id)
   end
