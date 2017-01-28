@@ -7,4 +7,8 @@ class Pot
     @chip = 0
     @hand_users = []
   end
+
+  def user_names
+    hand_users.map{|hu| hu.user.name}.join(', ')
+  end
 end

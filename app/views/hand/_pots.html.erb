@@ -1,0 +1,12 @@
+<table class="pot_list" id="pot_list">
+  <tr>
+    <th>pot</th>
+    <th></th>
+  </tr>
+  <% pots.each do | pot | %>
+    <tr>
+      <th><%= pot.chip %></th>
+      <th><%= pot.user_names %></th>
+    </tr>
+  <% end %>
+</table>

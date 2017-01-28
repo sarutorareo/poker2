@@ -8,7 +8,7 @@ class BroadcastRoomUsersJob < ApplicationJob
 
   private
   def render_user_list(room_id)
-    return ApplicationController.renderer.render(partial: 'room_user/index', locals: { room_users: RoomUser.where(:room_id => room_id) } )
+    ApplicationController.renderer.render(partial: 'room_user/index', locals: { room_users: RoomUser.where(:room_id => room_id) } )
   end
 
 end

@@ -45,6 +45,9 @@ module Game
       _reset_all_user_action_for_raise!(hand_id, user_id)
     end
 
+    # potを計算してクライアントに通知
+    _build_pot(room_id, hand_id)
+
     # 勝者を判定
     return if judge_winners(room_id, hand_id)
 
@@ -269,6 +272,16 @@ private
       room.users << cpu
       break
     end
+  end
+
+  def self._build_pot(room_id, hand_id)
+    df = DlBuildPotForm.new({
+        :hand_id => hand_id
+      })
+    srv = df.build_service
+    pots = srv.do!
+    
+    BroadcastPotsJob.perform_later room_id, Marshal.dump(pots)
   end
 
 end

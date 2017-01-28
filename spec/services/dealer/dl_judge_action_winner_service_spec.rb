@@ -18,7 +18,7 @@ RSpec.describe DlJudgeActionWinnerService, type: :service do
     context 'user_1:CALLを除いて全員foldなら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_1.id)
+          if hu.user_id == @user_1.id
             hu.last_action = TernActionCall.new(100)
           else
             hu.last_action = TernActionFold.new
@@ -34,7 +34,7 @@ RSpec.describe DlJudgeActionWinnerService, type: :service do
     context 'user_2:CALLを除いて全員foldなら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_2.id)
+          if hu.user_id == @user_2.id
             hu.last_action = TernActionCall.new(100)
           else
             hu.last_action = TernActionFold.new
@@ -62,7 +62,7 @@ RSpec.describe DlJudgeActionWinnerService, type: :service do
     context '一人でもアクションしていない人がいたら' do
       before do
         @hand.hand_users.each do |hu|
-          if (hu.user_id == @user_1.id)
+          if hu.user_id == @user_1.id
             hu.last_action = TernActionNull.new
           else
             hu.last_action = TernActionCall.new(100)
