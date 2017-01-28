@@ -11,7 +11,6 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
       @hand.users << @user_1
       @hand.users << @user_2
       @hand.save!
-      
     end
     context 'user_1:AA, user_2:KKなら' do
       before do
@@ -25,7 +24,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
           end
           hu.save!
         end
-        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id})
+        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id, :hand_user_ids => @hand.hand_users.map{|hu| hu.user_id}})
         @ds = df.build_service
       end
       it 'srv.winnerにuser_1のidが入る' do
@@ -46,7 +45,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
           end
           hu.save!
         end
-        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id})
+        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id, :hand_user_ids => @hand.hand_users.map{|hu| hu.user_id}})
         @ds = df.build_service
       end
       it 'srv.winnerにuser_2のidが入る' do
@@ -67,7 +66,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
           end
           hu.save!
         end
-        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id})
+        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id, :hand_user_ids => @hand.hand_users.map{|hu| hu.user_id}})
         @ds = df.build_service
       end
       it 'srv.winnerにuser_1, user_2のidが入る' do
@@ -89,7 +88,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
           end
           hu.save!
         end
-        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id})
+        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id, :hand_user_ids => @hand.hand_users.map{|hu| hu.user_id}})
         @ds = df.build_service
       end
       it 'srv.winnerにuser_2のidが入る' do
@@ -111,7 +110,7 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
           end
           hu.save!
         end
-        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id})
+        df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id, :hand_user_ids => @hand.hand_users.map{|hu| hu.user_id}})
         @ds = df.build_service
       end
       it 'srv.winnerにuser_2のidが入る' do
@@ -119,6 +118,47 @@ RSpec.describe DlJudgeUserHandWinnerService, type: :service do
         p @ds.winner_user_ids
         expect(@ds.winner_user_ids.count).to eq(1)
         expect(@ds.winner_user_ids[0]).to eq(@user_1.id)
+      end
+    end
+    context 'user_1:AA, user_2:QQなら, user_3:KKなら' do
+      before do
+        @user_3 = FactoryGirl.create(:user)
+        @hand.users << @user_3
+        @hand.hand_users.each do |hu|
+          if hu.user_id == @user_1.id
+            hu.user_hand << Card.new_from_str("SA")
+            hu.user_hand << Card.new_from_str("CA")
+          elsif hu.user_id == @user_2.id
+            hu.user_hand << Card.new_from_str("SQ")
+            hu.user_hand << Card.new_from_str("CQ")
+          else
+            hu.user_hand << Card.new_from_str("SK")
+            hu.user_hand << Card.new_from_str("CK")
+          end
+          hu.save!
+        end
+      end
+      context '全員が参加しているpotなら' do
+        before do
+          df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id, :hand_user_ids => @hand.hand_users.map{|hu| hu.user_id}})
+          @ds = df.build_service
+        end
+        it 'srv.winnerにuser_1のidが入る' do
+          @ds.do!
+          expect(@ds.winner_user_ids.count).to eq(1)
+          expect(@ds.winner_user_ids[0]).to eq(@user_1.id)
+        end
+      end
+      context 'user_1が参加していないpotなら' do
+        before do
+          df = DlJudgeUserHandWinnerForm.new({:hand_id => @hand.id, :hand_user_ids => [@user_2.id, @user_3.id]})
+          @ds = df.build_service
+        end
+        it 'srv.winnerにuser_3のidが入る' do
+          @ds.do!
+          expect(@ds.winner_user_ids.count).to eq(1)
+          expect(@ds.winner_user_ids[0]).to eq(@user_3.id)
+        end
       end
     end
   end

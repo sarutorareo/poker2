@@ -6,8 +6,9 @@ module Game
   def self.start_hand(room_id)
     # 引数の検証
     raise ArgumentError.new "room_user is blank" if Room.find(room_id).room_users.blank?
-    add_cpu_user=true
+    add_cpu_user=false
     _add_cpu_user_to_room(room_id) if add_cpu_user
+    _remove_cpu_user_to_room(room_id) unless add_cpu_user
 
     # 新たなハンドを作成する
     hand = _create_new_hand({
@@ -49,11 +50,11 @@ module Game
     pots = _build_pot(room_id, hand_id)
 
     # 勝者を判定
-    settlement, winners = _judge_winners(hand_id)
+    settlement, winners_pots = _judge_winners(hand_id, pots)
     # 勝者決まったら
-    if winners.present?
+    if winners_pots.present?
       # (ショウダウンの場合)ハンドを見せる , ポットを分配する , クライントに伝える
-      _after_hand_settlement_arrived(room_id, hand_id, settlement, winners, pots)
+      _after_hand_settlement_arrived(room_id, hand_id, settlement, winners_pots)
       return
     end
 
@@ -181,15 +182,15 @@ private
 
   # 勝者が決まったか判定
   # アクションまたはハンドによる勝者を判定する
-  def self._judge_winners(hand_id)
+  def self._judge_winners(hand_id, pots)
     # 一周してなければ何もしない
     unless is_rounded_all?(hand_id)
       return SETTLEMENT_NONE, nil
     end
 
-    action_winner = _judge_action_winner(hand_id)
+    action_winner = _judge_action_winner(pots)
     unless action_winner.blank?
-      return SETTLEMENT_ACTION, action_winner
+      return SETTLEMENT_ACTION, pots
     end
 
     hand = Hand.find(hand_id)
@@ -197,25 +198,32 @@ private
       return SETTLEMENT_NONE, nil
     end
 
-    # showdown
-    return SETTLEMENT_HAND, _judge_user_hand_winner(hand_id)
+    # ポットごとにshowdown
+    pots.each do |pot|
+      winners = _judge_user_hand_winner(hand_id, pot.hand_users)
+      # 勝者以外をpotから消す
+      pot.hand_users.reduce{|hu| !winners.include?(hu.user_id)}
+    end
+    return SETTLEMENT_HAND, pots
   end
 
   # 決着がついたあとの処理
-  def self._after_hand_settlement_arrived(room_id, hand_id, settlement, winners, pots)
+  def self._after_hand_settlement_arrived(room_id, hand_id, settlement, pots)
     # ショウダウンまでいってたらカードを見せる
     if settlement == SETTLEMENT_HAND then
       # TODO
       # _showdown
     end
     # 勝者を伝える
-    _send_winner_message(room_id, winners)
+    pots.each_with_index do |pot, index|
+      _send_winner_message(room_id, index, pot.hand_users)
+    end
     # ポットを分配
     _apply_pots(hand_id, pots)
   end
 
-  def self._send_winner_message(room_id, action_winner)
-    Message.create! content: MsgUtil.msg_winners(action_winner), room_id: room_id, user_name: 'dealer'
+  def self._send_winner_message(room_id, pot_index, pot_winner)
+    Message.create! content: MsgUtil.msg_winners(pot_index, pot_winner.map{|hu| hu.user_id}), room_id: room_id, user_name: 'dealer'
   end
 
   def self._next_betting_round(room_id, hand_id)
@@ -231,23 +239,35 @@ private
   end
 
   # アクションによって決まる勝者(全員foldさせた人)を判定する
-  def self._judge_action_winner(hand_id)
-    p "############# in _judge_action_winner"
-    df = DlJudgeActionWinnerForm.new({
-        :hand_id => hand_id
-      })
-    srv = df.build_service
-    srv.do!
-
-    p "############# after srv.do!"
-    return srv.winner_user_id
+  def self._judge_action_winner(pots)
+    # すべてのpotが一人しかいなければ、action_winner
+    hand_user_id = nil
+    pots.each do |pot|
+      ColorLog.clog pot.hand_users
+      raise 'pot.hand_users.blank' if pot.hand_users.blank?
+      return nil if pot.hand_users.size != 1
+      raise 'pot.hand_users is different' if hand_user_id.present? && pot.hand_users[0].user_id != hand_user_id
+      hand_user_id = pot.hand_users[0].id
+    end
+    ColorLog.clog "hand_user_id = #{hand_user_id}"
+    return hand_user_id
+#    p "############# in _judge_action_winner"
+#    df = DlJudgeActionWinnerForm.new({
+#        :hand_id => hand_id
+#      })
+#    srv = df.build_service
+#    srv.do!
+#
+#    p "############# after srv.do!"
+#    return srv.winner_user_id
   end
 
   # アクションによって決まる勝者(全員foldさせた人)を判定する
-  def self._judge_user_hand_winner(hand_id)
+  def self._judge_user_hand_winner(hand_id, hand_users)
     p "############# in _judge_user_hand_winner"
     df = DlJudgeUserHandWinnerForm.new({
-        :hand_id => hand_id
+        :hand_id => hand_id,
+        :hand_user_ids => hand_users.map{|hu| hu.user_id}
       })
     srv = df.build_service
     srv.do!
@@ -273,6 +293,13 @@ private
       room.users << cpu
       break
     end
+  end
+  def self._remove_cpu_user_to_room(room_id)
+    room = Room.find_by_id(room_id)
+    User.where(:user_type=>User::UT_CPU).order(:id).each do |cpu|
+      room.users.delete(cpu)
+    end
+    room.save!
   end
 
   def self._build_pot(room_id, hand_id)
