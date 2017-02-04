@@ -188,6 +188,7 @@ private
       return SETTLEMENT_NONE, nil
     end
 
+    # アクションによって決まる勝敗を判断する
     action_winner = _judge_action_winner(pots)
     unless action_winner.blank?
       return SETTLEMENT_ACTION, pots
@@ -198,7 +199,7 @@ private
       return SETTLEMENT_NONE, nil
     end
 
-    # ポットごとにshowdown
+    # ポットごとにハンドの強さを判定する
     pots.each do |pot|
       winners = _judge_user_hand_winner(hand_id, pot.hand_users)
       # 勝者以外をpotから消す

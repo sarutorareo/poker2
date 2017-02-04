@@ -1,5 +1,6 @@
 class CardList < Array
   def self.new_from_str(card_strs)
+    raise 'dbg: card_strs invalid' if _check_params(card_strs)
     new_list = CardList.new
     return new_list if card_strs.blank?
     0.step(card_strs.length-1, 2) do |idx|
@@ -25,7 +26,7 @@ class CardList < Array
       return false if sorted_self[index].val < sorted_other[index].val
     end
     return true if sorted_self.count > sorted_other.count
-    return false
+    false
   end
 
   def to_s
@@ -33,7 +34,7 @@ class CardList < Array
     self.each do |c|
       result += c.to_s
     end
-    return result
+    result
   end
 
   def to_disp_s
@@ -41,6 +42,12 @@ class CardList < Array
     self.each do |c|
       result += c.to_disp_s
     end
-    return result
+    result
+  end
+
+protected
+
+  def self._check_params(params)
+    # 何もしない（必要に応じてオーバーライドすること)
   end
 end
