@@ -202,7 +202,7 @@ private
     pots.each do |pot|
       winners = _judge_user_hand_winner(hand_id, pot.hand_users)
       # 勝者以外をpotから消す
-      pot.hand_users.reduce{|hu| !winners.include?(hu.user_id)}
+      pot.hand_users.reject!{|hu| !winners.include?(hu.user_id)}
     end
     return SETTLEMENT_HAND, pots
   end
