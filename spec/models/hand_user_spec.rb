@@ -130,4 +130,52 @@ RSpec.describe HandUser, type: :model do
       end
     end
   end
+  describe 'get_best_yaku' do
+    context 'hicardしかないとき' do
+      context '降順に強いカードが並んでいるとき' do
+        context 'ボードが一番強いとき' do
+          before do
+            @hu = HandUser.new
+            @hu.user_hand.concat(CardList.new_from_str('S5S7'))
+            @board = CardList.new_from_str('SACKSQSJS9')
+          end
+          it '強い順に５枚が選ばれる' do
+            yaku = @hu.get_best_yaku(@board)
+            expect(yaku.kind_of?(YakuHiCard)).to eq(true)
+            expect(yaku.five_card_list.length).to eq(5)
+            expect(yaku.five_card_list == @board).to eq(true)
+          end
+        end
+        context '手札のほうが強いとき' do
+          context '手札から１枚採用する' do
+            before do
+              @hu = HandUser.new
+              @hu.user_hand.concat(CardList.new_from_str('S5S7'))
+              @board = CardList.new_from_str('SACKSQSJS9')
+            end
+            it '強い順に５枚が選ばれる' do
+              @board = CardList.new_from_str('SACKSQSJS3')
+              yaku = @hu.get_best_yaku(@board)
+              expect(yaku.kind_of?(YakuHiCard)).to eq(true)
+              expect(yaku.five_card_list.length).to eq(5)
+              expect(yaku.five_card_list == CardList.new_from_str('SACKSQSJS7')).to eq(true)
+            end
+          end
+          context '手札から2枚採用する' do
+            before do
+              @hu = HandUser.new
+              @hu.user_hand.concat(CardList.new_from_str('SAS9'))
+              @board = CardList.new_from_str('D2D3D4S6H7')
+            end
+            it '強い順に５枚が選ばれる' do
+              yaku = @hu.get_best_yaku(@board)
+              expect(yaku.kind_of?(YakuHiCard)).to eq(true)
+              expect(yaku.five_card_list.length).to eq(5)
+              expect(yaku.five_card_list == CardList.new_from_str('SAS9D4S6H7')).to eq(true)
+            end
+          end
+        end
+      end
+    end
+  end
 end

@@ -18,7 +18,7 @@ class Card
   end
 
   def val
-    return no == 1 ? 14 : no
+    no == 1 ? 14 : no
   end
 
   def self.new_from_str(str)
@@ -30,14 +30,12 @@ class Card
     result = ""
     result += _get_suit_str
     result += _get_no_str
-    return result
   end
 
   def to_disp_s
     result = ""
     result += _get_suit_disp_str
     result += _get_no_str
-    return result
   end
 
   def self.to_suit(suit_str)
@@ -61,7 +59,13 @@ class Card
     end
   end
 
-  private
+  def == other
+    return false if other.nil?
+    return true if self.suit == other.suit && self.no == other.no
+    false
+  end
+
+private
   def _check_range_suit(suit)
     raise ArgumentError, "ivalid suit #{suit}" if (!SUITS.include?(suit))
   end
@@ -71,7 +75,7 @@ class Card
   end
 
   def _get_suit_str
-    return case self.suit
+    case self.suit
       when ST_SPADE then 'S'
       when ST_HEART then 'H'
       when ST_CLUB then 'C'
@@ -81,7 +85,7 @@ class Card
   end
 
   def _get_suit_disp_str
-    return case self.suit
+    case self.suit
       when ST_SPADE then '♠'
       when ST_HEART then '♥'
       when ST_CLUB then '♣'
@@ -91,7 +95,7 @@ class Card
   end
 
   def _get_no_str
-    return case self.no
+    case self.no
       when 1 then 'A'
       when 13 then 'K'
       when 12 then 'Q'

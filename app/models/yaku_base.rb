@@ -4,7 +4,13 @@ class YakuBase
 
   def self.new_from_str(str)
     five_card_list = FiveCardList.new_from_str(str)
-    return YakuHiCard.new(five_card_list) if YakuHiCard.is_satisfied_by?(five_card_list)
+    new_from_card_list(five_card_list)
+  end
+
+  def self.new_from_card_list(card_list)
+    raise "card_list length is not five but #{card_list.length}" unless card_list.length == 5
+
+    return YakuHiCard.new(card_list) if YakuHiCard.is_satisfied_by?(card_list)
 
     raise 'invalid params'
   end
@@ -15,7 +21,7 @@ class YakuBase
 
   def compare_to(other_yaku)
     return 1 if other_yaku.nil?
-    _do_compare_to(other_yaku)
+    _compare_same_yaku_to(other_yaku)
   end
 
   def self.get_yaku_value
@@ -24,13 +30,14 @@ class YakuBase
 
 protected
 
-  def _do_compare_to(other_yaku)
+  def _compare_same_yaku_to(other_yaku)
     raise 'must override'
   end
+
+private
 
   def initialize(five_card_list)
     @five_card_list = five_card_list
   end
 
-private
 end

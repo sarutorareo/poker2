@@ -88,4 +88,21 @@ RSpec.describe Card, type: :model do
       expect(@card_ck.val).to eq(13)
     end
   end
+  describe '==' do
+    before do
+      @card = Card.new_from_str("CA")
+    end
+    it 'nil⇛false' do
+      expect(@card == nil).to eq(false)
+    end
+    it 'マークが異なる⇛false' do
+      expect(@card == Card.new_from_str("DA")).to eq(false)
+    end
+    it '値が異なる⇛false' do
+      expect(@card == Card.new_from_str("CK")).to eq(false)
+    end
+    it 'マークも値も同じ⇛true' do
+      expect(@card == Card.new_from_str("CA")).to eq(true)
+    end
+  end
 end

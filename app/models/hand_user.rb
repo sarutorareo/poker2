@@ -31,6 +31,25 @@ class HandUser < ApplicationRecord
     last_action.kbn_str
   end
 
+  def get_best_yaku(board)
+    # 7枚から5枚に
+    card_list = CardList.new
+    card_list.concat(board)
+    card_list.concat(user_hand)
+    best_yaku = nil
+    card_list.each_with_index do |c, i|
+      (i+1..card_list.length-1).each do |j|
+        current_five_card_list = card_list.reject{|card|
+          [card_list[i], card_list[j]].include?(card)
+        }
+        current_yaku = YakuBase.new_from_card_list(current_five_card_list)
+        best_yaku = current_yaku if best_yaku.nil? || current_yaku.compare_to(best_yaku) > 0
+      end
+    end
+
+    best_yaku
+  end
+
 private
   def _set_order
     max_order = self.hand.get_max_hand_user_order

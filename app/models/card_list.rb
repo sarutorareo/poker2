@@ -45,6 +45,24 @@ class CardList < Array
     result
   end
 
+  def == other
+    return true if self.blank? and other.blank?
+    return false if self.length != other.length
+    self.each do |card|
+      return false unless other.include?(card)
+    end
+    true
+  end
+
+  #blockを渡すこと
+  def reject
+    result = CardList.new
+    self.each do |c|
+      result << c unless yield(c)
+    end
+    result
+  end
+
 protected
 
   def self._check_params(params)

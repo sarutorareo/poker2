@@ -161,6 +161,7 @@ RSpec.describe CardList, type: :model do
         expect(@card_list_2.hicard_than?(@card_list_1)).to eq(false)
       end
     end
+
     context '同じ数字だけど一枚多い' do
       before do
         @card_list_1 << Card.new(Card::ST_HEART, 3)
@@ -174,6 +175,95 @@ RSpec.describe CardList, type: :model do
       it ' 多い方がつ ' do
         expect(@card_list_1.hicard_than?(@card_list_2)).to eq(false)
         expect(@card_list_2.hicard_than?(@card_list_1)).to eq(true)
+      end
+    end
+  end
+  describe '==' do
+    context 'blank同士' do
+      before do
+        @card_list = CardList.new_from_str("")
+      end
+      it 'nilはtrue' do
+        expect(@card_list == nil).to eq(true)
+      end
+      it '１枚もカードがなければはtrue' do
+        expect(@card_list == CardList.new_from_str("")).to eq(true)
+      end
+      it '1枚でも中身があればfalse' do
+        expect(@card_list == CardList.new_from_str("SA")).to eq(false)
+      end
+    end
+    context "1枚カードがある" do
+      before do
+        @card_list = CardList.new_from_str("SQ")
+      end
+      it 'カードがない⇛false' do
+        expect(@card_list == CardList.new_from_str("")).to eq(false)
+      end
+      it 'スーツが異なるカード⇛false' do
+        expect(@card_list == CardList.new_from_str("CQ")).to eq(false)
+      end
+      it '値が異なるカード⇛false' do
+        expect(@card_list == CardList.new_from_str("SK")).to eq(false)
+      end
+      it 'スーツも値も同じカード⇛true' do
+        expect(@card_list == CardList.new_from_str("SQ")).to eq(true)
+      end
+      it '枚数が異なる⇛false' do
+        expect(@card_list == CardList.new_from_str("SASK")).to eq(false)
+      end
+    end
+    context "2枚カードがある" do
+      before do
+        @card_list = CardList.new_from_str("SQS8")
+      end
+      context '枚数が異なる場合' do
+        it '枚数が多い⇛false' do
+          expect(@card_list == CardList.new_from_str("SQS8S6")).to eq(false)
+        end
+        it '枚数が少ない⇛false' do
+          expect(@card_list == CardList.new_from_str("SQ")).to eq(false)
+        end
+      end
+      context '枚数が同じ場合' do
+        it '同じカード' do
+          expect(@card_list == CardList.new_from_str("SQS8")).to eq(true)
+          expect(@card_list == CardList.new_from_str("S8SQ")).to eq(true)
+        end
+      end
+    end
+  end
+  describe 'reject' do
+    before do
+      @card_list = CardList.new_from_str('SASKSQ')
+    end
+    context 'blockが何でもfalse' do
+      it '同じcard_listが返る' do
+        result = @card_list.reject{false}
+        expect(result.equal?(@card_list)).to eq(false)
+        expect(result == @card_list).to eq(true)
+      end
+    end
+    context 'blockが何でもtrue' do
+      it '同じcard_listが返る' do
+        result = @card_list.reject{true}
+        expect(result.equal?(@card_list)).to eq(false)
+        expect(result.length).to eq(0)
+      end
+    end
+    context 'blockが特定のインデックスを弾く' do
+      it 'ブロックの条件を満たすものを除いた要素の配列が返される' do
+        result = @card_list.reject{|c| c == @card_list[1]}
+        expect(result.equal?(@card_list)).to eq(false)
+        expect(result.length).to eq(2)
+        expect(result[0].to_s).to eq('SA')
+        expect(result[1].to_s).to eq('SQ')
+      end
+      it 'ブロックの条件を満たすものを除いた要素の配列が返される' do
+        result = @card_list.reject{|c| [@card_list[1], @card_list[0]].include?(c)}
+        expect(result.equal?(@card_list)).to eq(false)
+        expect(result.length).to eq(1)
+        expect(result[0].to_s).to eq('SQ')
       end
     end
   end
