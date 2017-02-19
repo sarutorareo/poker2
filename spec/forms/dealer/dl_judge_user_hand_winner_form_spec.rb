@@ -11,6 +11,7 @@ RSpec.describe DlJudgeUserHandWinnerForm, type: :form do
       data = {}
       data[:hand_id] = 3
       data[:hand_user_ids] = [1, 2]
+      data[:baord] = FiveCardList.new_from_str('SAS2S3S4S5')
       form = DlJudgeUserHandWinnerForm.new(data)
       expect(form.hand_id).to eq(3)
       expect(form.hand_user_ids.size).to eq(2)
@@ -29,7 +30,7 @@ RSpec.describe DlJudgeUserHandWinnerForm, type: :form do
         expect(form.valid?).to eq(false)
       end
     end
-    context 'hand_idがあるが、hand_user_idsがないなら' do
+    context 'hand_idがあるが、hand_user_ids, boardがないなら' do
       before do
         @data = {}
         @data[:hand_id] = '1'
@@ -39,7 +40,7 @@ RSpec.describe DlJudgeUserHandWinnerForm, type: :form do
         expect(form.valid?).to eq(false)
       end
     end
-    context 'hand_user_idsがあるが、hand_idがないなら' do
+    context 'hand_user_idsがあるが、hand_id, boardがないなら' do
       before do
         @data = {}
         @data[:hand_user_ids] = [1]
@@ -49,12 +50,24 @@ RSpec.describe DlJudgeUserHandWinnerForm, type: :form do
         expect(form.valid?).to eq(false)
       end
     end
-    context 'hand_idと、hand_user_idsがあるなら' do
+    context 'hand_idと、hand_user_idsがあるが、boardがないなら' do
         before do
           @data = {}
           @data[:hand_id] = '1'
           @data[:hand_user_ids] = [1]
         end
+      it 'valid?=true' do
+        form = DlJudgeUserHandWinnerForm.new(@data)
+        expect(form.valid?).to eq(false)
+      end
+    end
+    context 'hand_idと、hand_user_idsと、boardがあるなら' do
+      before do
+        @data = {}
+        @data[:hand_id] = '1'
+        @data[:hand_user_ids] = [1]
+        @data[:board] = FiveCardList.new_from_str('CAC1C3C6C7')
+      end
       it 'valid?=true' do
         form = DlJudgeUserHandWinnerForm.new(@data)
         expect(form.valid?).to eq(true)
@@ -73,6 +86,7 @@ RSpec.describe DlJudgeUserHandWinnerForm, type: :form do
         @hand.save!
         @data[:hand_id] = @hand.id
         @data[:hand_user_ids] = [@user_1.id]
+        @data[:board] = FiveCardList.new_from_str('CAC1C3C6C7')
       end
       it 'サービスが作られる' do
         form = DlJudgeUserHandWinnerForm.new(@data)

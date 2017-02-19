@@ -26,8 +26,8 @@ RSpec.describe YakuHiCard, type: :model do
       end
       context '5枚目で差がつく場合' do
         before do
-          @yaku_1 = YakuHiCard.new_from_str('SAS2S3S4S5')
-          @yaku_2 = YakuHiCard.new_from_str('D2CAC2C3C4')
+          @yaku_1 = YakuHiCard.new_from_str('SAS2S3S4S6')
+          @yaku_2 = YakuHiCard.new_from_str('D2CAC5C3C4')
         end
         it 'yaku_1が勝つ' do
           expect(@yaku_1.compare_to(@yaku_2)).to eq(1)

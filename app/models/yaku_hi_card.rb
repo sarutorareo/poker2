@@ -1,5 +1,5 @@
 class YakuHiCard < YakuBase
-  def get_yaku_value
+  def yaku_val
     1
   end
 
